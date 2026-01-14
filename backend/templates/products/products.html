@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Marketplace - Products</title>
+</head>
+
+<body>
+    <h1>Products List</h1>
+
+    <nav>
+        <a href="{% url 'user_profile' %}">My Profile</a> |
+        {% if user.userprofile.is_premium %}
+        <a href="{% url 'create_product' %}">Sell Product</a>
+        {% endif %}
+    </nav>
+
+    <hr>
+
+    {% if products %}
+    {% for product in products %}
+    <div style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px;">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
+        <p><strong>Price:</strong> {{ product.price }}€</p>
+        <p><strong>Seller:</strong> {{ product.seller.username }}</p>
+
+        {% if user.is_authenticated %}
+        {% if product.seller != user %}
+        <a href="{% url 'acquire_product' product.id %}">
+            <button>Acquire Product</button>
+        </a>
+        {% else %}
+        <span style="color: gray;">(This is your product)</span>
+        {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No products available for sale at the moment.</p>
+    {% endif %}
+</body>
+
+</html>

@@ -55,7 +55,7 @@ ROOT_URLCONF = 'MarketPlace.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,7 +69,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MarketPlace.wsgi.application'
 
-
+LOGIN_URL = 'login'  
+LOGIN_REDIRECT_URL = 'main_page' 
+LOGOUT_REDIRECT_URL = 'main_page'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
