@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Marketplace</title>
+</head>
+
+<body>
+    <h1>Marketplace</h1>
+
+    <ul>
+        {% for product in products %}
+        <li>
+            {{ product.name }} - ${{ product.price }}
+            <form method="post" action="{% url 'acquire_product' product.id %}">
+                {% csrf_token %}
+                <button type="submit">Acquire</button>
+            </form>
+        </li>
+        {% empty %}
+        <li>No products available.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'user_profile' %}">Go to My Profile</a>
+</body>
+
+</html>

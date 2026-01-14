@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Products</title>
+</head>
+
+<body>
+    <h1>My Products</h1>
+
+    <ul>
+        {% for product in products %}
+        <li>{{ product.name }} - ${{ product.price }}</li>
+        {% empty %}
+        <li>You don’t own any products yet.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'product_list' %}">Back to Marketplace</a>
+</body>
+
+</html>
