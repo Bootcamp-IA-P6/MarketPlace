@@ -1,0 +1,14 @@
+Virtual environment: python3 -m venv venv && source venv/bin/activate && python -m pip install --upgrade pip
+
+pip freeze > requirements.txt
+
+pip install -r requirements.txt
+
+
+python3 -m venv venv && source venv/bin/activate && python -m pip install --upgrade pip
+
+python -m pip install --upgrade pip && pip install -r requirements.txt
+
+
+pyenv install 3.14.0
+

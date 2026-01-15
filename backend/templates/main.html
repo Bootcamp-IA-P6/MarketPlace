@@ -1,0 +1,36 @@
+<body>
+    <h1>Marketplace</h1>
+    <nav>
+        {% if user.is_authenticated %}
+        <a href="{% url 'user_profile' %}">Go to My Profile</a>
+        {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </nav>
+    <hr>
+    <ul>
+        {% for product in products %}
+        <li>
+            <strong>{{ product.name }}</strong> - {{ product.price }}€
+            <p>{{ product.description }}</p>
+            <p><small>Seller: {{ product.seller.username }}</small></p>
+
+            {% if user.is_authenticated %}
+            {% if product.seller != user %}
+            <form method="post" action="{% url 'acquire_product' product.id %}">
+                {% csrf_token %}
+                <button type="submit">Acquire</button>
+            </form>
+            {% else %}
+            <span style="color: gray;">(Your product)</span>
+            {% endif %}
+            {% else %}
+            <a href="{% url 'login' %}"><button type="button">Login to buy</button></a>
+            {% endif %}
+        </li>
+        <hr>
+        {% empty %}
+        <li>No products available.</li>
+        {% endfor %}
+    </ul>
+</body>
