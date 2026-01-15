@@ -1,5 +1,4 @@
 # __init__.py
 # __pycache__
-.dockerignore
-.env
-database.ini
+
+# .env
