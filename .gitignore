@@ -1,5 +1,14 @@
-# __init__.py
-# __pycache__
-.dockerignore
+__pycache__/
+*.py[cod]
+*$py.class
+
 .env
 database.ini
+
+venv/
+.venv/
+env/
+
+db.sqlite3
+.DS_Store
+*.log
