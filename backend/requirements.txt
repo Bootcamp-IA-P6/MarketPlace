@@ -13,3 +13,5 @@ rsa
 six
 dotenv
 dj-database-url
+python-dotenv
+
