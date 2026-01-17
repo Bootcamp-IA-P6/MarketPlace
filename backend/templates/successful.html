@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Purchase Successful</title>
+</head>
+
+<body>
+    <h1>Purchase completed successfully!</h1>
+
+    <p>You bought: <strong>{{ product.name }}</strong></p>
+    <p>Price: {{ product.price }} €</p>
+
+    <br>
+
+    <a href="{% url 'user_profile' %}">
+        <button type="button">Return to My Profile</button>
+    </a>
+
+    <br><br>
+
+    <a href="{% url 'main_page' %}">
+        <button type="button">Back to Home</button>
+    </a>
+</body>
+
+</html>

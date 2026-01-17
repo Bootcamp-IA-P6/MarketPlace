@@ -13,10 +13,10 @@
         <li>
             <strong>{{ product.name }}</strong> - {{ product.price }}€
             <p>{{ product.description }}</p>
-            <p><small>Seller: {{ product.seller.username }}</small></p>
+            <p><small>Seller: {{ product.seller.user.username }}</small></p>
 
             {% if user.is_authenticated %}
-            {% if product.seller != user %}
+            {% if product.seller.user != user %}
             <form method="post" action="{% url 'acquire_product' product.id %}">
                 {% csrf_token %}
                 <button type="submit">Acquire</button>
