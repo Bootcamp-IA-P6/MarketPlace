@@ -10,3 +10,4 @@ env/
 db.sqlite3
 .DS_Store
 *.log
+.DS_Store
