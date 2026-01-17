@@ -11,3 +11,5 @@ python-jose[cryptography]
 python-multipart
 rsa
 six
+dotenv
+dj-database-url

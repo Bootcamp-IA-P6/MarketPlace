@@ -10,7 +10,7 @@
     <h1>Products List</h1>
 
     <nav>
-        <a href="{% url 'user_profile' %}">My Profile</a> |
+        <a href="">My Profile</a> |
         {% if user.userprofile.is_premium %}
         <a href="{% url 'create_product' %}">Sell Product</a>
         {% endif %}
