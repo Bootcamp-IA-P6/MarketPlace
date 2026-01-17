@@ -1,12 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Product, UserProfile
+from .models import Product, Favorite, Order, UserProfile
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate
+from django.core.exceptions import ValidationError
+from django.contrib import messages
 
 
 def main_page(request):
-    products = Product.objects.filter(bought_by__isnull=True)
+    products = Product.objects.filter(is_sold=False)
     return render(request, 'main.html', {'products': products})
 
 def login_view(request):
@@ -22,53 +24,88 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     
-    return render(request, 'users/login.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 
 @login_required
 def acquire_product(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
-    if product.seller == request.user:
-        return redirect('main_page')
-    profile = request.user.userprofile
-    profile.products.add(product)
-    product.bought_by.add(request.user.userprofile)
+    product = get_object_or_404(Product, id=product_id)
+    profile = request.user.profile
+
+    try:
+        Order.objects.create(
+            buyer=profile,
+            seller=product.seller,
+            product=product,
+            quantity=1,
+            total_price=product.price,
+        )
+    except ValidationError as e:
+        return render(request, "error.html", {"message": str(e)})
+
+    product.is_sold = True
     product.save()
-    return redirect('user_profile')
+
+    return render(request, "successful.html", {"product": product})
+
+
+
 
 
 @login_required
 def user_profile(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    
-    purchased_products = profile.products.all()
-    selling_products = request.user.products_venda.all()
-    
-    context = {
+    profile = request.user.profile
+    purchased_products = Product.objects.filter(
+        order__buyer=profile
+    ).distinct()
+    favorite_products = Favorite.objects.filter(
+        user=profile
+    ).select_related('product')
+    selling_products = Product.objects.filter(
+        seller=profile,
+        is_sold=False
+    )
+    sold_products = Product.objects.filter(
+        seller=profile,
+        is_sold=True
+    )
+    return render(request, 'profile.html', {
         'profile': profile,
         'purchased_products': purchased_products,
+        'favorite_products': [fav.product for fav in favorite_products],
         'selling_products': selling_products,
-    }
-    return render(request, 'users/profile.html', context)
+        'sold_products': sold_products,
+    })
+
+
 
 
 @login_required
 def upgrade_to_seller(request):
-    profile = request.user.userprofile
+    profile = request.user.profile
     profile.is_premium = True
     profile.save()
     return redirect('user_profile')
 
 @login_required
 def create_product(request):
-    if not request.user.userprofile.is_premium:
-        return redirect('user_profile')
-    
     if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        quantity = request.POST.get('quantity') or 1
+        image = request.POST.get('image')
+
         Product.objects.create(
-            seller=request.user,
-            name=request.POST.get('name'),
-            description=request.POST.get('description'),
-            price=request.POST.get('price')
+            seller=request.user.profile,
+            name=name,
+            description=description,
+            price=price,
+            quantity=int(quantity),
+            image=image
         )
-        return redirect('main_page')
-    return render(request, 'products/create_product.html')
+
+        return redirect('user_profile')
+
+    return render(request, 'create_product.html')
+
+

@@ -35,8 +35,20 @@
 
     <h3>My Sales</h3>
     {% for p in selling_products %}
-    <p>{{ p.name }} - {{ p.price }}€</p>
+    <p>
+        {{ p.name }} - {{ p.price }}€
+        {% if p.is_sold %}
+        <span>(Sold)</span>
+        {% endif %}
+    </p>
     {% empty %}
     <p>No products for sale.</p>
+    {% endfor %}
+
+    <h3>My Sold Products</h3>
+    {% for p in sold_products %}
+    <p>{{ p.name }} - {{ p.price }}€</p>
+    {% empty %}
+    <p>No products sold yet.</p>
     {% endfor %}
 </body>
