@@ -27,6 +27,7 @@
             {% else %}
             <a href="{% url 'login' %}"><button type="button">Login to buy</button></a>
             {% endif %}
+            <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 200px; height: auto;">
         </li>
         <hr>
         {% empty %}

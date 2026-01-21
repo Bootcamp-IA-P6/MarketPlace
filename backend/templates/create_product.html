@@ -13,16 +13,25 @@
         <label for="name">Product Name:</label><br>
         <input type="text" name="name" id="name" required><br><br>
 
-        <label for="description">Description:</label><br>
-        <textarea name="description" id="description" required></textarea><br><br>
+        <label for="quantity">Quantity:</label><br>
+        <input type="number" name="quantity" id="quantity" required><br><br>
+
+        <label for="location">Location:</label><br>
+        <input type="text" name="location" id="location" required><br><br>
 
         <label for="price">Price (€):</label><br>
         <input type="number" name="price" id="price" step="0.01" required><br><br>
 
+        <label for="description">Description:</label><br>
+        <textarea name="description" id="description" required></textarea><br><br>
+
+        <label for="image">Image:</label><br>
+        <input type="file" name="image" id="image" required><br><br>
+
         <button type="submit">Publish Product</button>
     </form>
     <br>
-    <a href="{% url 'profile' %}">Cancel and go back</a>
+    <a href="{% url 'user_profile' %}">Cancel and go back</a>
 </body>
 
 </html>

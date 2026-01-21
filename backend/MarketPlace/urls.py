@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
+from .models import Product
 
 urlpatterns = [
     path('', views.main_page, name='main_page'),
@@ -12,4 +13,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='main_page'), name='logout'),
+    path('product/<int:product_id>/', views.product_detail, name='product_detail'),
+    
 ]
