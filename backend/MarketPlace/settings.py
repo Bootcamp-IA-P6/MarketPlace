@@ -3,6 +3,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
 
+
+from config_logs.logs import LOGGING_CONFIG
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,3 +88,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGGING = LOGGING_CONFIG
