@@ -7,12 +7,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from .models import Location
 import uuid
-from supabase import create_client
-import os
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def main_page(request):
     products = Product.objects.filter(is_sold=False)
@@ -115,14 +110,12 @@ def create_product(request):
                 file_ext = image_file.name.split('.')[-1]
                 file_name = f"{uuid.uuid4()}.{file_ext}"
                 file_content = image_file.read()
-                supabase.storage.from_("products_images").upload(
-                    path=f"public/{file_name}",
+                supabase.storage.from_("image").upload(
+                    path=file_name,
                     file=file_content,
                     file_options={"content-type": image_file.content_type}
                 )
-                image = supabase.storage.from_("products_images").get_public_url(f"public/{file_name}")
-                print("FILES:", request.FILES) 
-                print("IMAGE:", image)
+                image = supabase.storage.from_("image").get_public_url(file_name)
             except Exception as e:
                 print(f"Error: {e}")
 
@@ -140,7 +133,7 @@ def create_product(request):
         return redirect('user_profile')
 
     locations = Location.objects.all()
-    return render(request, 'create_product.html', {'locations': locations} )
+    return render(request, 'create_product.html', {'locations': locations})
 
 
 
