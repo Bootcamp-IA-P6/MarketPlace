@@ -22,13 +22,23 @@
     <br><br>
     <a href="{% url 'create_product' %}"><button>Sell new product</button></a>
     {% else %}
-    <a href="{% url 'upgrade_to_seller' %}"><button>Upgrade to seller</button></a>
+    <button id="upgrade-btn">Upgrade to seller (30€)</button>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+        document.getElementById("upgrade-btn").onclick = function () {
+            fetch("/create-upgrade-session/")
+                .then(res => res.json())
+                .then(data => stripe.redirectToCheckout({ sessionId: data.id }));
+        }; 
+    </script>
     {% endif %}
 
     <hr>
     <h3>My Purchases</h3>
     {% for p in purchased_products %}
     <p>{{ p.name }} - {{ p.price }}€</p>
+    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
     {% empty %}
     <p>No purchases yet.</p>
     {% endfor %}
@@ -41,6 +51,7 @@
         <span>(Sold)</span>
         {% endif %}
     </p>
+    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
     {% empty %}
     <p>No products for sale.</p>
     {% endfor %}
@@ -48,6 +59,7 @@
     <h3>My Sold Products</h3>
     {% for p in sold_products %}
     <p>{{ p.name }} - {{ p.price }}€</p>
+    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
     {% empty %}
     <p>No products sold yet.</p>
     {% endfor %}

@@ -15,5 +15,9 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='main_page'), name='logout'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('register/', views.register_view, name='register'),
+    path('create-checkout-session/<int:product_id>/', views.create_checkout_session, name='create_checkout_session'),
+    path('create-upgrade-session/', views.create_upgrade_session, name='create_upgrade_session'),
+    path('upgrade-success/', views.upgrade_success, name='upgrade_success'),
+    path('successful/<int:product_id>/', views.successful, name='successful'),
     
 ]
