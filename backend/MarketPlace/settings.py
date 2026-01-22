@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import dj_database_url
 
 
-from config_logs.logs import LOGGING_CONFIG
+from config_logs.logs import LOGGING_SETTINGS
 
 load_dotenv()
 
@@ -90,4 +90,5 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-LOGGING = LOGGING_CONFIG
+LOGGING = LOGGING_SETTINGS
+
