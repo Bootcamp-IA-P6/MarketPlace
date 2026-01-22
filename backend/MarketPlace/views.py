@@ -8,8 +8,20 @@ from django.contrib import messages
 
 
 def main_page(request):
-    products = Product.objects.filter(is_sold=False)
-    return render(request, 'main.html', {'products': products})
+    DESIGN_MODE = True  # 🔴 TRUE = solo diseño | FALSE = productos reales
+
+    if DESIGN_MODE:
+        # 👉 NO toca la base de datos
+        return render(request, 'main.html', {
+            'design_mode': True
+        })
+    else:
+        # 👉 Modo real (cuando todo esté estable)
+        products = Product.objects.filter(is_sold=False)
+        return render(request, 'main.html', {
+            'design_mode': False,
+            'products': products
+        })
 
 def login_view(request):
     if request.method == 'POST':
@@ -107,5 +119,12 @@ def create_product(request):
         return redirect('user_profile')
 
     return render(request, 'create_product.html')
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'detail_marketplace.html', {
+        'product': product
+    })
+
 
 

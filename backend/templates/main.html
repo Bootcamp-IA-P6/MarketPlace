@@ -1,36 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Looping Marketplace</title>
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+    <!-- Tu CSS -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+
 <body>
-    <h1> Looping Marketplace</h1>
-    <nav>
-        {% if user.is_authenticated %}
+
+<h1>Looping Marketplace</h1>
+
+<nav>
+    {% if user.is_authenticated %}
         <a href="{% url 'user_profile' %}">Go to My Profile</a>
-        {% else %}
+    {% else %}
         <a href="{% url 'login' %}">Login</a>
-        {% endif %}
-    </nav>
-    <hr>
-    <ul>
-        {% for product in products %}
+    {% endif %}
+</nav>
+
+<hr>
+
+<!-- ========================= -->
+<!-- LISTA DE PRODUCTOS REAL -->
+<!-- ========================= -->
+{% if not design_mode %}
+<ul>
+    {% for product in products %}
         <li>
             <strong>{{ product.name }}</strong> - {{ product.price }}€
             <p>{{ product.description }}</p>
             <p><small>Seller: {{ product.seller.user.username }}</small></p>
 
             {% if user.is_authenticated %}
-            {% if product.seller.user != user %}
-            <form method="post" action="{% url 'acquire_product' product.id %}">
-                {% csrf_token %}
-                <button type="submit">Acquire</button>
-            </form>
+                {% if product.seller.user != user %}
+                    <form method="post" action="{% url 'acquire_product' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Acquire</button>
+                    </form>
+                {% else %}
+                    <span style="color: gray;">(Your product)</span>
+                {% endif %}
             {% else %}
-            <span style="color: gray;">(Your product)</span>
-            {% endif %}
-            {% else %}
-            <a href="{% url 'login' %}"><button type="button">Login to buy</button></a>
+                <a href="{% url 'login' %}">
+                    <button type="button">Login to buy</button>
+                </a>
             {% endif %}
         </li>
         <hr>
-        {% empty %}
+    {% empty %}
         <li>No products available.</li>
-        {% endfor %}
-    </ul>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<!-- ========================= -->
+<!-- HERO CAROUSEL (DISEÑO) -->
+<!-- ========================= -->
+{% if design_mode %}
+<section class="hero-carousel">
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+                <img src="{% static 'images/product-placeholder.jpg' %}">
+                <div class="slide-info">
+                    <h2>Bolso Premium</h2>
+                    <p>€35.00</p>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <img src="{% static 'images/product-placeholder.jpg' %}">
+                <div class="slide-info">
+                    <h2>Bolso Clásico</h2>
+                    <p>€42.00</p>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <img src="{% static 'images/product-placeholder.jpg' %}">
+                <div class="slide-info">
+                    <h2>Bolso Minimal</h2>
+                    <p>€29.00</p>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <img src="{% static 'images/product-placeholder.jpg' %}">
+                <div class="slide-info">
+                    <h2>Bolso Minimal</h2>
+                    <p>€29.00</p>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <img src="{% static 'images/product-placeholder.jpg' %}">
+                <div class="slide-info">
+                    <h2>Bolso Minimal</h2>
+                    <p>€29.00</p>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Botones -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+
+
+    </div>
+
+</section>
+{% endif %}
+
+<!-- ========================= -->
+<!-- SCRIPTS -->
+<!-- ========================= -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="{% static 'carousel.js' %}"></script>
+
 </body>
+</html>
