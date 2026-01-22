@@ -9,6 +9,10 @@ from .models import Location
 import uuid
 from supabase import create_client
 import os
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
+
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
@@ -141,6 +145,22 @@ def create_product(request):
 
     locations = Location.objects.all()
     return render(request, 'create_product.html', {'locations': locations} )
+
+
+
+
+def register_view(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("main_page")
+    else:
+        form = UserCreationForm()
+
+    return render(request, "register.html", {"form": form})
+
 
 
 
