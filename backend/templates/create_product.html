@@ -17,7 +17,11 @@
         <input type="number" name="quantity" id="quantity" required><br><br>
 
         <label for="location">Location:</label><br>
-        <input type="text" name="location" id="location" required><br><br>
+        <select name="location" id="location" required>
+            {% for location in locations %}
+            <option value="{{ location.id }}">{{ location.city_name }}, {{ location.country_name }}</option>
+            {% endfor %}
+        </select><br><br>
 
         <label for="price">Price (€):</label><br>
         <input type="number" name="price" id="price" step="0.01" required><br><br>
