@@ -10,6 +10,11 @@ urlpatterns = [
     path('profile/', views.user_profile, name='user_profile'),
     path('profile/upgrade/', views.upgrade_to_seller, name='upgrade_to_seller'),
     path('admin/', admin.site.urls),
-    path('login/', views.login_view, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='main_page'), name='logout'),
-]
+
+    path("accounts/", include("accounts.urls")),
+
+    path('admin/', admin.site.urls),
+
+
+
+  ]
