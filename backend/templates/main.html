@@ -23,7 +23,11 @@
 
             <button type="button" id="fav-btn-{{ product.id }}" onclick="handleFavorite('{{ product.id }}')"
                 style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+                {% if user.is_authenticated and product in user.profile.favorites.all %}
                 Remove from Favorites ❤️
+                {% else %}
+                Add to Favorites 🤍
+                {% endif %}
             </button>
 
             <p>{{ product.description }}</p>
@@ -64,12 +68,10 @@
     <script>
         const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
 
-        // Pass authentication status to JS
         const isAuthenticated = "{% if user.is_authenticated %}true{% else %}false{% endif %}" === "true";
 
 
         function handleFavorite(productId) {
-            // If not logged in, show alert and redirect to login
             if (!isAuthenticated) {
                 Swal.fire({
                     title: 'Login Required',
