@@ -105,12 +105,33 @@
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
+
                         executeToggle(productId);
+
+                        Swal.fire({
+                            title: 'Removed!',
+                            text: 'The product has been removed.',
+                            icon: 'success',
+                            timer: 1000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
                     }
                 });
             } else {
+
                 executeToggle(productId);
+
+                Swal.fire({
+                    title: 'Added!',
+                    text: 'Product added to favorites.',
+                    icon: 'success',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
             }
+
         }
 
         function executeToggle(productId) {
@@ -153,11 +174,26 @@
             })
                 .then((result) => {
                     if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Looping to checkout...',
+                            text: 'Redirecting to checkout...',
+                            icon: 'success',
+                            timer: 1000,
+                            showConfirmButton: true
+                        });
                         fetch(`/create-checkout-session/${productId}/`)
                             .then(res => res.json())
                             .then(data => {
                                 stripe.redirectToCheckout({ sessionId: data.id });
                             });
+                    } else {
+                        Swal.fire({
+                            title: 'Cancelled',
+                            text: 'Purchase cancelled.',
+                            icon: 'error',
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
                     }
                 });
         }
@@ -178,5 +214,7 @@
                 }
             });
         }
+
+
     </script>
 </body>
