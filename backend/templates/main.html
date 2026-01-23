@@ -1,33 +1,61 @@
 <body>
-    <h1> Looping Marketplace</h1>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <h1>Looping Marketplace</h1>
+
     <nav>
         {% if user.is_authenticated %}
-        <a href="{% url 'user_profile' %}">Go to My Profile</a>
+        <a href="{% url 'user_profile' %}">Go to My Profile</a> |
+        <a href="{% url 'favorites' %}">Go to Favorites</a>
         {% else %}
         <a href="{% url 'login' %}">Login</a>
         {% endif %}
     </nav>
+
     <hr>
+
     <ul>
         {% for product in products %}
         <li>
-            <strong>{{ product.name }}</strong> - {{ product.price }}€
+            <a href="{% url 'product_detail' product.id %}">
+                <strong>{{ product.name }}</strong>
+            </a>
+            - {{ product.price }}€
+
+            <button type="button" id="fav-btn-{{ product.id }}" onclick="handleFavorite('{{ product.id }}')"
+                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+                {% if user.is_authenticated and product in user.profile.favorites.all %}
+                Remove from Favorites ❤️
+                {% else %}
+                Add to Favorites 🤍
+                {% endif %}
+            </button>
+
             <p>{{ product.description }}</p>
             <p><small>Seller: {{ product.seller.user.username }}</small></p>
             <p><small>Location: {{ product.location.city_name }}, {{ product.location.country_name }}</small></p>
 
             {% if user.is_authenticated %}
             {% if product.seller.user != user %}
-            <form method="post" action="{% url 'acquire_product' product.id %}">
-                {% csrf_token %}
-                <button type="submit">Acquire</button>
-            </form>
+
+            <button onclick="confirmPurchase('{{ product.id }}')"
+                style="background-color: green; color: white; border: none; padding: 6px 12px; cursor: pointer;">
+                Buy
+            </button>
+
             {% else %}
-            <span style="color: gray;">(Your product)</span>
+
+            <button onclick="confirmDelete('{{ product.id }}')"
+                style="background-color: red; color: white; border: none; padding: 6px 12px; cursor: pointer;">
+                Delete product
+            </button>
+
             {% endif %}
             {% else %}
-            <a href="{% url 'login' %}"><button type="button">Login to buy</button></a>
+            <a href="{% url 'login' %}">
+                <button type="button">Login to buy</button>
+            </a>
             {% endif %}
+
             <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 200px; height: auto;">
         </li>
         <hr>
@@ -35,4 +63,120 @@
         <li>No products available.</li>
         {% endfor %}
     </ul>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+
+        const isAuthenticated = "{% if user.is_authenticated %}true{% else %}false{% endif %}" === "true";
+
+
+        function handleFavorite(productId) {
+            if (!isAuthenticated) {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'You must be logged in to manage favorites. Do you want to login?',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, login',
+                    cancelButtonText: 'No'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{% url 'login' %}";
+                    }
+                });
+                return;
+            }
+
+            const btn = document.getElementById(`fav-btn-${productId}`);
+            const isFavorite = btn.innerHTML.includes("Remove");
+
+            if (isFavorite) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to remove this from favorites?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        executeToggle(productId);
+                    }
+                });
+            } else {
+                executeToggle(productId);
+            }
+        }
+
+        function executeToggle(productId) {
+            fetch(`/toggle-favorites/${productId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Error');
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const btn = document.getElementById(`fav-btn-${productId}`);
+                        if (data.action === "added") {
+                            btn.innerHTML = "Remove from Favorites ❤️";
+                        } else {
+                            btn.innerHTML = "Add to Favorites 🤍";
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                });
+        }
+
+        function confirmPurchase(productId) {
+            Swal.fire({
+                title: 'Looping',
+                text: 'Are you sure you want to buy this product?',
+                iconHtml: '🛒',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, buy',
+                cancelButtonText: 'Cancel'
+            })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/create-checkout-session/${productId}/`)
+                            .then(res => res.json())
+                            .then(data => {
+                                stripe.redirectToCheckout({ sessionId: data.id });
+                            });
+                    }
+                });
+        }
+
+        function confirmDelete(productId) {
+            Swal.fire({
+                title: 'Looping',
+                text: 'Are you sure you want to delete this product?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/product/delete/${productId}/`;
+                }
+            });
+        }
+    </script>
 </body>

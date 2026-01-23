@@ -1,0 +1,22 @@
+<h2>Create your account</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label for="id_username">Username</label><br>
+    {{ form.username }}
+    <br><br>
+
+    <label for="id_password1">Password</label><br>
+    {{ form.password1 }}
+    <br><br>
+
+    <label for="id_password2">Confirm password</label><br>
+    {{ form.password2 }}
+    <br><br>
+
+    <button type="submit">Create account</button>
+</form>
+
+<br>
+<a href="{% url 'login' %}">Back to login</a>
