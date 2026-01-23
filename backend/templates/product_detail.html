@@ -13,8 +13,9 @@
         <p>{{ product.description }}</p>
         <p><strong>Location:</strong> {{ product.location }}</p>
         <p><strong>Price:</strong> {{ product.price }}€</p>
-        <p><strong>Seller:</strong> {{ product.seller.username }}</p>
-        <img src="{{ product.image.url }}" alt="Product Image">
+        <p><strong>Seller:</strong> {{ product.seller.user.username }}</p>
+        <img src="{{ product.image }}" alt="Product Image" style="max-width: 300px; height: auto; border-radius: 8px;">
+
     </div>
     <a href="{% url 'main_page' %}">Back to Products</a>
     <a href="{% url 'acquire_product' product.id %}">Acquire</a>

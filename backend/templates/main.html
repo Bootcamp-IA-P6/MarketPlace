@@ -14,7 +14,11 @@
     <ul>
         {% for product in products %}
         <li>
-            <strong>{{ product.name }}</strong> - {{ product.price }}€
+            <a href="{% url 'product_detail' product.id %}">
+                <strong>{{ product.name }}</strong>
+            </a>
+            - {{ product.price }}€
+
             <p>{{ product.description }}</p>
             <p><small>Seller: {{ product.seller.user.username }}</small></p>
             <p><small>Location: {{ product.location.city_name }}, {{ product.location.country_name }}</small></p>
@@ -22,7 +26,7 @@
             {% if user.is_authenticated %}
             {% if product.seller.user != user %}
             <button class="checkout-btn" data-product-id="{{ product.id }}">
-                Pagar
+                Buy
             </button>
             {% else %}
             <span style="color: gray;">(Your product)</span>
