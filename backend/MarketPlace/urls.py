@@ -3,6 +3,8 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 from .models import Product
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.main_page, name='main_page'),
@@ -19,5 +21,9 @@ urlpatterns = [
     path('create-upgrade-session/', views.create_upgrade_session, name='create_upgrade_session'),
     path('upgrade-success/', views.upgrade_success, name='upgrade_success'),
     path('successful/<int:product_id>/', views.successful, name='successful'),
-    
+    path('product/delete/<int:product_id>/', views.delete_product, name='delete_product'),
+    path('favorites/', views.favorites, name='favorites'),
+    path('toggle-favorites/<int:product_id>/', views.toggle_favorites, name='toggle_favorites'),
+
+
 ]

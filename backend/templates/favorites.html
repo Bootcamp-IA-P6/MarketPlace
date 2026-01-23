@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Favorites</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <h1>Favorites</h1>
+
+    <div id="favorites-container">
+        {% for product in favorite_products %}
+        <div id="product-card-{{ product.id }}"
+            style="border-bottom: 1px solid #ccc; padding: 15px; margin-bottom: 10px;">
+            <p><strong>{{ product.name }}</strong></p>
+
+            <img src="{{ product.image }}" alt="{{ product.name }}"
+                style="width: 200px; height: auto; display: block; margin-bottom: 10px; border-radius: 8px;">
+
+            <a href="{% url 'product_detail' product.id %}">View Product</a>
+
+            <button type="button" onclick="confirmRemove('{{ product.id }}')"
+                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+                Remove from Favorites ❤️
+            </button>
+
+        </div>
+        {% empty %}
+        <p>You have no favorites yet.</p>
+        {% endfor %}
+    </div>
+
+    <br>
+    <a href="{% url 'main_page' %}">Back to main page</a>
+
+    <script>
+        function confirmRemove(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this product from your favorites?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff4d4d',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/toggle-favorites/${productId}/`)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Removed!',
+                                    text: 'The product has been removed.',
+                                    icon: 'success',
+                                    timer: 1000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Detailed Error:", err);
+                            window.location.reload();
+                        });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

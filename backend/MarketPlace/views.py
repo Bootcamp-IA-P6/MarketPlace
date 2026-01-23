@@ -18,7 +18,7 @@ from django.conf import settings
 import stripe
 from .models import Product
 from .models import UserProfile
-
+from django.contrib.auth.decorators import login_required
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -178,6 +178,12 @@ def register_view(request):
 def create_checkout_session(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
+    if request.user.is_authenticated and product.seller == request.user.profile:
+        return JsonResponse(
+            {"error": "You cannot buy your own product"},
+            status=400
+        )
+
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         mode="payment",
@@ -193,12 +199,12 @@ def create_checkout_session(request, product_id):
                 "quantity": 1,
             }
         ],
-success_url=f"http://127.0.0.1:8000/successful/{product.id}",
-cancel_url="http://127.0.0.1:8000/profile",
-
+        success_url=f"http://127.0.0.1:8000/successful/{product.id}",
+        cancel_url="http://127.0.0.1:8000/profile",
     )
 
     return JsonResponse({"id": session.id})
+
 
 
 
@@ -252,9 +258,50 @@ def upgrade_success(request):
     profile.save() 
     return render(request, "upgrade_success.html")
 
+
+from django.conf import settings 
+def product_detail(request, product_id): 
+    product = get_object_or_404(Product, id=product_id) 
+    return render(request, "product_detail.html", { "product": product, "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY })
+
+
 @login_required
-def product_detail(request, product_id):
+def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'product_detail.html', {'product': product})
+
+    if product.seller != request.user.profile:
+        return render(request, "error.html", {"message": "You don't have permission to delete this product."})
+
+    if product.image:
+        try:
+            file_path = product.image.split("/public/")[-1]
+            supabase.storage.from_("products_images").remove([f"public/{file_path}"])
+        except Exception as e:
+            print("Error deleting image from Supabase:", e)
 
 
+    product.delete()
+
+    return redirect("user_profile")
+
+
+
+@login_required
+def toggle_favorites(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    profile = request.user.profile
+
+    if profile.favorites.filter(id=product.id).exists():
+        profile.favorites.remove(product)
+        return JsonResponse({"success": True, "action": "removed"})
+    else:
+        profile.favorites.add(product)
+        return JsonResponse({"success": True, "action": "added"})
+
+
+
+@login_required
+def favorites(request):
+    profile = request.user.profile
+    favorite_products = profile.favorites.all()
+    return render(request, "favorites.html", {"favorite_products": favorite_products})

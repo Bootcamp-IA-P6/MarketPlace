@@ -21,6 +21,7 @@ class UserProfile(models.Model):
 )
     location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.SET_NULL)
     is_premium = models.BooleanField(default=False)
+    favorites = models.ManyToManyField('Product', related_name='favorited_by', blank=True)
 
     def __str__(self):
         return self.user.username
@@ -76,3 +77,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'profile'):
         instance.profile.save()
+
+
+
+    class Meta:
+        unique_together = ('user', 'product')
+
+    def __str__(self):
+        return f"{self.user.user.username} favorited {self.product.name}"
