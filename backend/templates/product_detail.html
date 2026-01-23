@@ -9,7 +9,13 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://js.stripe.com/v3/"></script>
-
+    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
+    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
+    <a href="{% url 'favorites' %}"><button type="button">Favorites</button></a>
     <h1>Product Detail</h1>
 
     <div>

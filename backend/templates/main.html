@@ -4,10 +4,26 @@
 
     <nav>
         {% if user.is_authenticated %}
-        <a href="{% url 'user_profile' %}">Go to My Profile</a> |
-        <a href="{% url 'favorites' %}">Go to Favorites</a>
+
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button class="gray-btn" type="submit">Logout</button>
+        </form>
+
+        <a href="{% url 'user_profile' %}">
+            <button class="gray-btn" type="button">My Profile</button>
+        </a>
+
+        <a href="{% url 'favorites' %}">
+            <button class="gray-btn" type="button">Favorites</button>
+        </a>
+
         {% else %}
-        <a href="{% url 'login' %}">Login</a>
+
+        <a href="{% url 'login' %}">
+            <button class="gray-btn" type="button">Login</button>
+        </a>
+
         {% endif %}
     </nav>
 
@@ -21,14 +37,19 @@
             </a>
             - {{ product.price }}€
 
+            {% if user.is_authenticated and product.seller.user != user %}
             <button type="button" id="fav-btn-{{ product.id }}" onclick="handleFavorite('{{ product.id }}')"
                 style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
-                {% if user.is_authenticated and product in user.profile.favorites.all %}
+
+                {% if product in user.profile.favorites.all %}
                 Remove from Favorites ❤️
                 {% else %}
                 Add to Favorites 🤍
                 {% endif %}
+
             </button>
+            {% endif %}
+
 
             <p>{{ product.description }}</p>
             <p><small>Seller: {{ product.seller.user.username }}</small></p>
