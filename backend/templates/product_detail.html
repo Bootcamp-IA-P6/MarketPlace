@@ -9,7 +9,13 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://js.stripe.com/v3/"></script>
-
+    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
+    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
+    <a href="{% url 'favorites' %}"><button type="button">Favorites</button></a>
     <h1>Product Detail</h1>
 
     <div>
@@ -58,15 +64,31 @@
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, buy',
                 cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`/create-checkout-session/${productId}/`)
-                        .then(res => res.json())
-                        .then(data => {
-                            stripe.redirectToCheckout({ sessionId: data.id });
+            })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Looping to checkout...',
+                            text: 'Redirecting to checkout...',
+                            icon: 'success',
+                            timer: 1000,
+                            showConfirmButton: true
                         });
-                }
-            });
+                        fetch(`/create-checkout-session/${productId}/`)
+                            .then(res => res.json())
+                            .then(data => {
+                                stripe.redirectToCheckout({ sessionId: data.id });
+                            });
+                    } else {
+                        Swal.fire({
+                            title: 'Cancelled',
+                            text: 'Purchase cancelled.',
+                            icon: 'error',
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
         }
 
         function confirmDelete(productId) {

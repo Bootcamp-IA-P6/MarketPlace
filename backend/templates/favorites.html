@@ -8,6 +8,12 @@
 </head>
 
 <body>
+    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
+    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
     <h1>Favorites</h1>
 
     <div id="favorites-container">
@@ -32,8 +38,6 @@
         {% endfor %}
     </div>
 
-    <br>
-    <a href="{% url 'main_page' %}">Back to main page</a>
 
     <script>
         function confirmRemove(productId) {
@@ -60,7 +64,7 @@
                                     text: 'The product has been removed.',
                                     icon: 'success',
                                     timer: 1000,
-                                    showConfirmButton: false
+                                    showConfirmButton: true
                                 }).then(() => {
                                     window.location.reload();
                                 });

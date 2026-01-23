@@ -32,7 +32,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 def main_page(request):
-    products = Product.objects.filter(is_sold=False) 
+    products = Product.objects.filter(is_sold=False, is_available=True) 
     return render(request, 'main.html', { 'products': products, 'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,})
 
 
@@ -69,6 +69,7 @@ def acquire_product(request, product_id):
         return render(request, "error.html", {"message": str(e)})
 
     product.is_sold = True
+    product.is_available = False
     product.save()
 
     return render(request, "successful.html", {"product": product})
@@ -181,11 +182,11 @@ def register_view(request):
 def create_checkout_session(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
+    if not product.is_available or product.is_sold:
+        return JsonResponse({"error": "Product no longer available"}, status=400)
+
     if request.user.is_authenticated and product.seller == request.user.profile:
-        return JsonResponse(
-            {"error": "You cannot buy your own product"},
-            status=400
-        )
+        return JsonResponse({"error": "You cannot buy your own product"}, status=400)
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -195,9 +196,7 @@ def create_checkout_session(request, product_id):
                 "price_data": {
                     "currency": "eur",
                     "unit_amount": int(product.price * 100),
-                    "product_data": {
-                        "name": product.name,
-                    },
+                    "product_data": {"name": product.name},
                 },
                 "quantity": 1,
             }
@@ -207,6 +206,7 @@ def create_checkout_session(request, product_id):
     )
 
     return JsonResponse({"id": session.id})
+
 
 
 
@@ -263,9 +263,17 @@ def upgrade_success(request):
 
 
 from django.conf import settings 
-def product_detail(request, product_id): 
-    product = get_object_or_404(Product, id=product_id) 
-    return render(request, "product_detail.html", { "product": product, "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY })
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    if not product.is_available or product.is_sold:
+        return render(request, "product_unavailable.html")
+
+    return render(request, "product_detail.html", {
+        "product": product,
+        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
+    })
+
 
 
 @login_required
@@ -306,5 +314,7 @@ def toggle_favorites(request, product_id):
 @login_required
 def favorites(request):
     profile = request.user.profile
-    favorite_products = profile.favorites.all()
+    favorite_products = profile.favorites.filter(is_available=True)
+
+
     return render(request, "favorites.html", {"favorite_products": favorite_products})

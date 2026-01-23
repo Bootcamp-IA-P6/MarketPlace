@@ -35,7 +35,9 @@
         <button type="submit">Publish Product</button>
     </form>
     <br>
-    <a href="{% url 'user_profile' %}">Cancel and go back</a>
+    <form action="{% url 'main_page' %}" method="post">
+        <button type="submit">Cancel and go back</button>
+    </form>
 </body>
 
 </html>
