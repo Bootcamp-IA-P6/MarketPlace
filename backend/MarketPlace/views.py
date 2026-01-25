@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Product, Favorite, Order, UserProfile
+from .models import Product, Favorite, Order, UserProfile, ShoppingCart
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ValidationError
@@ -32,9 +32,23 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 def main_page(request):
-    products = Product.objects.filter(is_sold=False, is_available=True) 
-    return render(request, 'main.html', { 'products': products, 'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,})
+    products = Product.objects.filter(is_available=True, is_sold=False)
 
+    cart_products = []
+    if request.user.is_authenticated:
+        cart_products = list(
+            request.user.profile.shopping_cart.values_list("product_id", flat=True)
+        )
+
+    return render(
+        request,
+        "main.html",
+        {
+            "products": products,
+            "cart_products": cart_products,
+            "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+        }
+    )
 
 
 def login_view(request):
@@ -318,3 +332,40 @@ def favorites(request):
 
 
     return render(request, "favorites.html", {"favorite_products": favorite_products})
+
+
+@login_required
+def shopping_cart(request):
+    profile = request.user.profile
+    shopping_cart_products = profile.shopping_cart.select_related("product").filter(
+        product__is_available=True,
+        product__is_sold=False
+    )
+
+    return render(
+        request,
+        "shopping_cart.html",
+        {"shopping_cart_products": shopping_cart_products}
+    )
+
+
+
+@login_required
+def toggle_shopping_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    profile = request.user.profile
+
+    cart_item = ShoppingCart.objects.filter(
+        user=profile,
+        product=product
+    ).first()
+
+    if cart_item:
+        cart_item.delete()
+        return JsonResponse({"success": True, "action": "removed"})
+    else:
+        ShoppingCart.objects.create(
+            user=profile,
+            product=product
+        )
+        return JsonResponse({"success": True, "action": "added"})

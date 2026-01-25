@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
+    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
+    <a href="{% url 'favorites' %}"><button type="button">My Favorites</button></a>
+    <h1>Shopping Cart</h1>
+
+    <div id="shopping-cart-container">
+        {% for item in shopping_cart_products %}
+        <div id="product-card-{{ item.product.id }}"
+            style="border-bottom: 1px solid #ccc; padding: 15px; margin-bottom: 10px;">
+            <p><strong>{{ item.product.name }}</strong></p>
+            <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                style="width: 200px; height: auto; display: block; margin-bottom: 10px; border-radius: 8px;">
+            <p>{{ item.product.description }}</p>
+            <p><strong>location:</strong> {{ item.product.location.city_name }} </p>
+            <p><strong>Price:</strong> {{ item.product.price }}€</p>
+            <p><strong>Quantity:</strong> {{ item.product.quantity }}</p>
+            <p><strong>Seller:</strong> {{ item.product.seller.user.username }}</p>
+            <a href="{% url 'product_detail' item.product.id %}">View Product</a>
+            <button type="button" onclick="confirmRemove('{{ item.product.id }}')"
+                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+                Remove from Shopping Cart ❤️
+            </button>
+        </div>
+        {% empty %}
+        <p>You have no Shopping Cart yet.</p>
+        {% endfor %}
+
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                document.cookie.split(';').forEach(cookie => {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                    }
+                });
+            }
+            return cookieValue;
+        }
+
+        function confirmRemove(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this product from your Shopping Cart?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff4d4d',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/toggle-shopping-cart/${productId}/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken"),
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Removed!',
+                                    text: 'The product has been removed.',
+                                    icon: 'success',
+                                    timer: 1000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Detailed Error:", err);
+                            window.location.reload();
+                        });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
