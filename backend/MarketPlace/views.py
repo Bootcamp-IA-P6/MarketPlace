@@ -369,3 +369,20 @@ def toggle_shopping_cart(request, product_id):
             product=product
         )
         return JsonResponse({"success": True, "action": "added"})
+
+
+@login_required
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id) 
+
+    cart_products = []
+    if request.user.is_authenticated:
+        cart_products = list(
+            request.user.profile.shopping_cart.values_list("product_id", flat=True)
+        )
+
+    return render(request, "product_detail.html", {
+        "product": product,
+        "cart_products": cart_products,
+        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+    })

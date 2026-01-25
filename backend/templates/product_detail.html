@@ -4,19 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Looping - Product Detail</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://js.stripe.com/v3/"></script>
+
     <form action="{% url 'logout' %}" method="post" style="display:inline;">
         {% csrf_token %}
         <button type="submit">Logout</button>
     </form>
+
     <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
     <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
     <a href="{% url 'favorites' %}"><button type="button">Favorites</button></a>
     <a href="{% url 'shopping_cart' %}"><button type="button">Shopping Cart</button></a>
+
     <h1>Product Detail</h1>
 
     <div>
@@ -30,21 +33,32 @@
         <img src="{{ product.image }}" alt="Product Image" style="max-width: 300px; height: auto; border-radius: 8px;">
     </div>
 
-    <a href="{% url 'main_page' %}">Back to Products</a>
-
-    <br><br>
+    <br>
 
     {% if user.is_authenticated %}
     {% if product.seller.user != user %}
+
     <button onclick="confirmPurchase('{{ product.id }}')"
         style="background-color: green; color: white; border: none; padding: 8px 16px; cursor: pointer;">
         Buy
     </button>
+
+    <button id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
+        style="background-color: green; color: white; border: none; padding: 8px 16px; cursor: pointer;">
+        {% if product.id in cart_products %}
+        Remove from Cart 🛒❌
+        {% else %}
+        Add to Cart 🛒
+        {% endif %}
+    </button>
+
     {% else %}
+
     <button onclick="confirmDelete('{{ product.id }}')"
         style="background-color: red; color: white; border: none; padding: 8px 16px; cursor: pointer;">
         Delete product
     </button>
+
     {% endif %}
     {% else %}
     <a href="{% url 'login' %}">
@@ -54,6 +68,7 @@
 
     <script>
         const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+        const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
         function confirmPurchase(productId) {
             Swal.fire({
@@ -80,14 +95,6 @@
                             .then(data => {
                                 stripe.redirectToCheckout({ sessionId: data.id });
                             });
-                    } else {
-                        Swal.fire({
-                            title: 'Cancelled',
-                            text: 'Purchase cancelled.',
-                            icon: 'error',
-                            timer: 1000,
-                            showConfirmButton: false
-                        });
                     }
                 });
         }
@@ -107,6 +114,80 @@
                     window.location.href = `/product/delete/${productId}/`;
                 }
             });
+        }
+
+        function handleCart(productId) {
+            if (!isAuthenticated) {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'You must be logged in to manage your cart.',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Login',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{% url 'login' %}";
+                    }
+                });
+                return;
+            }
+
+            const btn = document.getElementById(`cart-btn-${productId}`);
+            const isInCart = btn.innerHTML.includes("Remove");
+
+            if (isInCart) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Remove this product from your cart?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        executeCartToggle(productId);
+                        Swal.fire({
+                            title: 'Removed',
+                            text: 'Product removed from cart.',
+                            icon: 'success',
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+            } else {
+                executeCartToggle(productId);
+                Swal.fire({
+                    title: 'Added',
+                    text: 'Product added to cart.',
+                    icon: 'success',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+            }
+        }
+
+        function executeCartToggle(productId) {
+            fetch(`/toggle-shopping-cart/${productId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const btn = document.getElementById(`cart-btn-${productId}`);
+                    if (data.action === "added") {
+                        btn.innerHTML = "Remove from Cart 🛒❌";
+                    } else {
+                        btn.innerHTML = "Add to Cart 🛒";
+                    }
+                });
         }
     </script>
 
