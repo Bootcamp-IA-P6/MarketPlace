@@ -11,17 +11,52 @@ def main_page(request):
     DESIGN_MODE = True  # 🔴 TRUE = solo diseño | FALSE = productos reales
 
     if DESIGN_MODE:
-        # 👉 NO toca la base de datos
+        # 👉 Productos mock (solo diseño)
+        mock_products = [
+            {
+                "name": "Pendientes crochet",
+                "price": "3,00 €",
+                "condition": "Muy bueno",
+                "likes": 42,
+            },
+            {
+                "name": "Botines cuero",
+                "price": "38,00 €",
+                "condition": "Nuevo con etiquetas",
+                "likes": 22,
+            },
+            {
+                "name": "Set Unicornio",
+                "price": "15,00 €",
+                "condition": "Nuevo sin etiquetas",
+                "likes": 52,
+            },
+            {
+                "name": "Jeans vintage",
+                "price": "10,00 €",
+                "condition": "Muy bueno",
+                "likes": 34,
+            },
+            {
+                "name": "Vestido lila",
+                "price": "15,00 €",
+                "condition": "Muy bueno",
+                "likes": 28,
+            },
+        ]
+
         return render(request, 'main.html', {
-            'design_mode': True
+            'design_mode': True,
+            'products': mock_products,   # 👈 CLAVE
         })
+
     else:
-        # 👉 Modo real (cuando todo esté estable)
         products = Product.objects.filter(is_sold=False)
         return render(request, 'main.html', {
             'design_mode': False,
             'products': products
         })
+
 
 def login_view(request):
     if request.method == 'POST':
