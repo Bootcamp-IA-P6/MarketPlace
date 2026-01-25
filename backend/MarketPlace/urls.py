@@ -26,7 +26,8 @@ urlpatterns = [
     path('toggle-favorites/<int:product_id>/', views.toggle_favorites, name='toggle_favorites'),
     path('shopping-cart/', views.shopping_cart, name='shopping_cart'),
     path('toggle-shopping-cart/<int:product_id>/', views.toggle_shopping_cart, name='toggle_shopping_cart'),
+    path("multi-success/", views.multi_success, name="multi_success"),
+    path("create-multi-checkout/", views.create_multi_checkout, name="create_multi_checkout"),
+
     
-
-
 ]

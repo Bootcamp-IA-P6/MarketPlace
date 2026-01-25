@@ -18,10 +18,11 @@ from django.conf import settings
 import stripe
 from .models import Product
 from .models import UserProfile
-
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+import json
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -244,7 +245,7 @@ def create_upgrade_session(request):
         metadata={
             "user_id": request.user.id,
         },
-        success_url="http://127.0.0.1:8000/upgrade-success",
+        success_url="http://127.0.0.1:8000/successful/",
         cancel_url="http://127.0.0.1:8000/profile",
     )
 
@@ -386,3 +387,44 @@ def product_detail(request, product_id):
         "cart_products": cart_products,
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
     })
+
+
+@csrf_exempt
+@login_required
+def create_multi_checkout(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=400)
+
+    data = json.loads(request.body)
+    product_ids = data.get("products", [])
+
+    line_items = []
+
+    for pid in product_ids:
+        product = Product.objects.get(id=pid)
+        line_items.append({
+            "price_data": {
+                "currency": "eur",
+                "product_data": {"name": product.name},
+                "unit_amount": int(product.price * 100),
+            },
+            "quantity": 1,
+        })
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=line_items,
+        mode="payment",
+        success_url="http://127.0.0.1:8000/multi-success/",
+        cancel_url="http://127.0.0.1:8000/shopping-cart/",
+    )
+
+    return JsonResponse({"checkout_url": session.url})
+
+
+
+@login_required
+def multi_success(request):
+    return render(request, "multi_success.html")
+
+

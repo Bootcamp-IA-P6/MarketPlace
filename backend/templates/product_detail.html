@@ -37,7 +37,7 @@
 
     {% if user.is_authenticated %}
     {% if product.seller.user != user %}
-
+    {% if product.is_available and not product.is_sold %}
     <button onclick="confirmPurchase('{{ product.id }}')"
         style="background-color: green; color: white; border: none; padding: 8px 16px; cursor: pointer;">
         Buy
@@ -51,20 +51,25 @@
         Add to Cart 🛒
         {% endif %}
     </button>
+    {% else %}
+    <p style="color: red; font-weight: bold; margin-top: 10px;">
+        This product is no longer available.
+    </p>
+    {% endif %}
 
     {% else %}
-
     <button onclick="confirmDelete('{{ product.id }}')"
         style="background-color: red; color: white; border: none; padding: 8px 16px; cursor: pointer;">
         Delete product
     </button>
-
     {% endif %}
+
     {% else %}
     <a href="{% url 'login' %}">
         <button type="button">Login to buy</button>
     </a>
     {% endif %}
+
 
     <script>
         const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
