@@ -33,7 +33,7 @@ SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-@cache_page(60 * 5)
+@cache_page(60 * 0.1)
 def main_page(request):
     products = Product.objects.filter(is_available=True, is_sold=False)
 
