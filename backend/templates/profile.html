@@ -7,14 +7,16 @@
 </head>
 
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <h2>My Profile: {{ user.username }}</h2>
 
     <form action="{% url 'logout' %}" method="post" style="display:inline;">
         {% csrf_token %}
-        <button type="submit">Cerrar Sesión</button>
+        <button type="submit">Logout</button>
     </form>
-
+    <a href="{% url 'favorites' %}"><button type="button">Favorites</button></a>
     <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
+    <a href="{% url 'shopping_cart' %}"><button type="button">Shopping Cart</button></a>
     <br><br>
 
     {% if profile.is_premium %}
@@ -22,33 +24,73 @@
     <br><br>
     <a href="{% url 'create_product' %}"><button>Sell new product</button></a>
     {% else %}
-    <a href="{% url 'upgrade_to_seller' %}"><button>Upgrade to seller</button></a>
+    <button id="upgrade-btn">Upgrade to seller (30€)</button>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+        document.getElementById("upgrade-btn").onclick = function () {
+            fetch("/create-upgrade-session/")
+                .then(res => res.json())
+                .then(data => stripe.redirectToCheckout({ sessionId: data.id }));
+        }; 
+    </script>
     {% endif %}
 
     <hr>
     <h3>My Purchases</h3>
     {% for p in purchased_products %}
     <p>{{ p.name }} - {{ p.price }}€</p>
+    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
     {% empty %}
     <p>No purchases yet.</p>
     {% endfor %}
 
+    <hr>
     <h3>My Sales</h3>
     {% for p in selling_products %}
+    <button onclick="confirmDelete('{{ p.id }}')"
+        style="background-color: red; color: white; border: none; padding: 6px 12px; cursor: pointer;">
+        Delete product
+    </button>
     <p>
         {{ p.name }} - {{ p.price }}€
         {% if p.is_sold %}
         <span>(Sold)</span>
         {% endif %}
     </p>
+    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
     {% empty %}
     <p>No products for sale.</p>
     {% endfor %}
 
+    <hr>
     <h3>My Sold Products</h3>
     {% for p in sold_products %}
     <p>{{ p.name }} - {{ p.price }}€</p>
+    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
     {% empty %}
     <p>No products sold yet.</p>
     {% endfor %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(productId) {
+            Swal.fire({
+                title: 'Looping',
+                text: 'Are you sure you want to delete this product?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/product/delete/${productId}/`;
+                }
+            });
+        }
+    </script>
+
 </body>

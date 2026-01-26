@@ -22,6 +22,8 @@
         <input type="password" name="password" id="id_password" required><br><br>
 
         <button type="submit">Login</button>
+        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+
     </form>
     <br>
     <a href="{% url 'main_page' %}">Back to Shop</a>

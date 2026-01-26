@@ -21,6 +21,7 @@ class UserProfile(models.Model):
 )
     location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.SET_NULL)
     is_premium = models.BooleanField(default=False)
+    favorites = models.ManyToManyField('Product', related_name='favorited_by', blank=True)
 
     def __str__(self):
         return self.user.username
@@ -36,7 +37,8 @@ class Product(models.Model):
     image = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_sold = models.BooleanField(default=False)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -55,7 +57,7 @@ class Order(models.Model):
     seller = models.ForeignKey(UserProfile, related_name='orders_sold', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=8, decimal_places=2)
     order_status = models.CharField(max_length=50, default='completed')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -76,3 +78,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'profile'):
         instance.profile.save()
+
+class ShoppingCart(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='shopping_cart')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+

@@ -1,0 +1,15 @@
+<h1>Upgrade completed!</h1>
+<p>You are now a Premium Seller 🎉</p>
+
+<!-- <form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form> -->
+<form action="{% url 'main_page' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Back to main page</button>
+</form>
+<form action="{% url 'user_profile' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Back to profile</button>
+</form>
