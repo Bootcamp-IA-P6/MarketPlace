@@ -36,13 +36,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 logger = logging.getLogger(__name__)
 
-def main_page(request):
-    products = Product.objects.filter(is_sold=False)
-    
-    
-    logger.info(f"Main page loaded. Displaying {products.count()} products.")
-    
-    return render(request, 'main.html', {'products': products})
+# ✅ ESTA ES LA FUNCIÓN main_page CORRECTA
 @cache_page(60 * 0.1)
 def main_page(request):
     products = Product.objects.filter(is_available=True, is_sold=False).order_by('-created_at')
@@ -216,11 +210,8 @@ def create_product(request):
 
         return redirect('user_profile')
 
-    return render(request, 'create_product.html')
     locations = Location.objects.all()
     return render(request, 'create_product.html', {'locations': locations} )
-
-
 
 
 def register_view(request):
@@ -469,5 +460,3 @@ def create_multi_checkout(request):
 @login_required
 def multi_success(request):
     return render(request, "multi_success.html")
-
-
