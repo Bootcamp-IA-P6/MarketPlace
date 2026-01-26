@@ -14,4 +14,7 @@ six
 dotenv
 dj-database-url
 python-dotenv
-
+stripe
+supabase
+supabase-auth
+stripe

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Product Unavailable</title>
+</head>
+
+<body style="font-family: Arial; text-align: center; padding: 40px;">
+
+    <h1>Sorry, this product is no longer available</h1>
+
+    <p style="font-size: 18px; margin-top: 10px;">
+        It may have been sold or removed by the seller.
+    </p>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'main_page' %}">
+            <button
+                style="padding: 10px 20px; background: #3085d6; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Back to Marketplace
+            </button>
+        </a>
+
+        <a href="{% url 'user_profile' %}">
+            <button
+                style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                Go to My Profile
+            </button>
+        </a>
+    </div>
+
+</body>
+
+</html>

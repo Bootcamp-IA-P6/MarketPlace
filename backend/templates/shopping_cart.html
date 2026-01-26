@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+
+    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
+    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
+    <a href="{% url 'favorites' %}"><button type="button">My Favorites</button></a>
+
+    <h1>Shopping Cart</h1>
+
+    <div id="shopping-cart-container">
+        {% for item in shopping_cart_products %}
+        <div id="product-card-{{ item.product.id }}"
+            style="border-bottom: 1px solid #ccc; padding: 15px; margin-bottom: 10px;">
+
+            <input type="checkbox" class="product-select" value="{{ item.product.id }}" onclick="updateTotal()">
+
+            <p><strong>{{ item.product.name }}</strong></p>
+
+            <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                style="width: 200px; height: auto; display: block; margin-bottom: 10px; border-radius: 8px;">
+
+            <p>{{ item.product.description }}</p>
+            <p><strong>Location:</strong> {{ item.product.location.city_name }}</p>
+            <p><strong>Price:</strong> {{ item.product.price }}€</p>
+
+            <a href="{% url 'product_detail' item.product.id %}">View Product</a>
+
+            <button type="button" onclick="confirmRemove('{{ item.product.id }}')"
+                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+                Remove from Shopping Cart ❤️
+            </button>
+        </div>
+        {% empty %}
+        <p>You have no Shopping Cart yet.</p>
+        {% endfor %}
+    </div>
+
+    <h2>Total: <span id="total-price">0</span> €</h2>
+
+    <button id="buy-selected-btn" onclick="buySelected()"
+        style="background-color: green; color: white; padding: 12px 25px; border: none; cursor: pointer; font-size: 16px; border-radius: 6px; margin-top: 15px;">
+        Buy Selected Products 🛒
+    </button>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                document.cookie.split(';').forEach(cookie => {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                    }
+                });
+            }
+            return cookieValue;
+        }
+
+        function updateTotal() {
+            let total = 0;
+
+            document.querySelectorAll(".product-select:checked").forEach(cb => {
+                const priceText = cb.closest("div").querySelector("p:nth-of-type(4)").innerText;
+                const price = parseFloat(
+                    priceText.replace("Price:", "").replace("€", "").trim()
+                );
+                total += price;
+            });
+
+            document.getElementById("total-price").innerText = total.toFixed(2);
+        }
+
+        function buySelected() {
+            const selected = Array.from(
+                document.querySelectorAll(".product-select:checked")
+            ).map(cb => cb.value);
+
+            if (selected.length === 0) {
+                Swal.fire("No products selected", "Select at least one product.", "info");
+                return;
+            }
+
+            Swal.fire({
+                title: "Confirm Purchase",
+                text: "Do you want to buy the selected products?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#aaa",
+                confirmButtonText: "Yes, buy",
+                cancelButtonText: "Cancel"
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch("/create-multi-checkout/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": getCookie("csrftoken")
+                        },
+                        body: JSON.stringify({ products: selected })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            window.location.href = data.checkout_url;
+                        });
+                }
+            });
+        }
+
+        function confirmRemove(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this product from your Shopping Cart?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff4d4d',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/toggle-shopping-cart/${productId}/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken"),
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Removed!',
+                                    text: 'The product has been removed.',
+                                    icon: 'success',
+                                    timer: 1000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            }
+                        });
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>
