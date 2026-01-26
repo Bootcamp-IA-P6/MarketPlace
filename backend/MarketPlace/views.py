@@ -81,7 +81,7 @@ def acquire_product(request, product_id):
             total_price=product.price,
         )
     except ValidationError as e:
-        return render(request, "error.html", {"message": str(e)})
+        return render(request, "error/error.html", {"message": str(e)})
 
     product.is_sold = True
     product.is_available = False
@@ -296,7 +296,7 @@ def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if product.seller != request.user.profile:
-        return render(request, "error.html", {"message": "You don't have permission to delete this product."})
+        return render(request, "error/error.html", {"message": "You don't have permission to delete this product."})
 
     if product.image:
         try:
