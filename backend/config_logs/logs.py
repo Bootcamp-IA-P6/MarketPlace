@@ -6,7 +6,6 @@ LOG_FILE_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_FILE_DIR):
     os.makedirs(LOG_FILE_DIR)
 
-# --- CAMBIO DE NOMBRE AQUÍ (De LOGGING_CONFIG a LOGGING_SETTINGS) ---
 LOGGING_SETTINGS = {
     'version': 1,
     'disable_existing_loggers': False,
