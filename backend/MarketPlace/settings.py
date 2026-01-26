@@ -5,6 +5,9 @@ import dj_database_url
 import environ
 import stripe
 
+
+from config_logs.logs import LOGGING_SETTINGS
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -103,6 +106,8 @@ USE_I18N = True
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
+LOGGING = LOGGING_SETTINGS
 
 CACHES = {
     'default': {
