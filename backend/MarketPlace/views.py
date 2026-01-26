@@ -1,3 +1,4 @@
+from django.views.decorators.cache import cache_page
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Product, Favorite, Order, UserProfile
@@ -31,6 +32,7 @@ SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
+@cache_page(60 * 5)
 def main_page(request):
     products = Product.objects.filter(is_sold=False, is_available=True) 
     return render(request, 'main.html', { 'products': products, 'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,})
@@ -263,6 +265,7 @@ def upgrade_success(request):
 
 
 from django.conf import settings 
+@cache_page(60 * 5)
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
