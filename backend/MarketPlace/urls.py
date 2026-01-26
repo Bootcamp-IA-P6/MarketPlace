@@ -40,10 +40,10 @@ urlpatterns = [
 ]
 
 # URLs para preview de errores (solo en desarrollo)
-# if settings.DEBUG:
-#     urlpatterns += [
-#         path('preview/404/', views.preview_404, name='preview_404'),
-#         path('preview/500/', views.preview_500, name='preview_500'),
-#         path('preview/403/', views.preview_403, name='preview_403'),
-#         path('preview/400/', views.preview_400, name='preview_400'),
-#     ]
+if settings.DEBUG:
+    urlpatterns += [
+        path('preview/404/', views.preview_404, name='preview_404'),
+        path('preview/500/', views.preview_500, name='preview_500'),
+        path('preview/403/', views.preview_403, name='preview_403'),
+        path('preview/400/', views.preview_400, name='preview_400'),
+    ]

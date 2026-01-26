@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>403 - Acceso prohibido | MarketPlace</title>
+    <title>403 - Access Forbidden | Looping MarketPlace</title>
     <style>
         * {
             margin: 0;
@@ -13,122 +13,136 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #A4E635 0%, #26C6DA 100%);
+            background-color: #ffffff;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: #333;
         }
         
         .error-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 3rem;
             text-align: center;
-            max-width: 500px;
-            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
         }
         
-        .error-icon {
-            font-size: 5rem;
-            margin-bottom: 1rem;
-            animation: shake 1s ease-in-out infinite;
+        .logo {
+            margin-bottom: 2rem;
+        }
+        
+        .logo img {
+            height: 80px;
+            width: auto;
         }
         
         .error-code {
-            font-size: 4rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #7ED321, #00BCD4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
+            font-size: 6rem;
+            font-weight: 300;
+            color: #000;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
         }
         
         .error-title {
             font-size: 2rem;
-            color: #333;
+            color: #000;
             margin-bottom: 1rem;
-            font-weight: 600;
+            font-weight: 400;
         }
         
         .error-message {
             color: #666;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             line-height: 1.6;
             font-size: 1.1rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
         .btn {
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 12px 30px;
+            border: 2px solid #000;
+            background-color: transparent;
+            color: #000;
             text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            border: none;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 160px;
-            justify-content: center;
-            margin: 0 10px;
+            gap: 8px;
         }
         
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn:hover::before {
-            left: 100%;
-        }
-        
-        .btn-home {
-            background: linear-gradient(45deg, #50C8FF, #00BCD4);
-            color: white;
-            box-shadow: 0 8px 20px rgba(80, 200, 255, 0.4);
-        }
-        
-        .btn-home:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 30px rgba(80, 200, 255, 0.5);
-            color: white;
+        .btn:hover {
+            background-color: #000;
+            color: #fff;
             text-decoration: none;
         }
         
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        .divider {
+            width: 100px;
+            height: 1px;
+            background-color: #ddd;
+            margin: 2rem auto;
+        }
+        
+        @media (max-width: 480px) {
+            .error-container {
+                padding: 1rem;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="error-container">
-        <div class="error-icon">🚫</div>
+        <div class="logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIzNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VERDI3IiBzdHJva2Utd2lkdGg9IjQiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjE1IiBmaWxsPSIjNTBDOEZGIi8+CjxwYXRoIGQ9Ik0xNSAxNWg1djVoLTV2LTV6bTAgN2g1djNoLTV2LTN6IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPHN2ZyB4PSI5MCIgeT0iMTAiPgo8dGV4dCB4PSIwIiB5PSIyNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI4IiBmb250LXdlaWdodD0iMzAwIiBmaWxsPSIjN0VERDI3Ij5Mb29waW5nPC90ZXh0Pgo8dGV4dCB4PSIwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjY2Ij5NYXJRZXRQBGFQZS90ZXh0Pgo8L3N2Zz4KPC9zdmc+" alt="Looping MarketPlace">
+        </div>
+        
         <div class="error-code">403</div>
-        <h1 class="error-title">Acceso Prohibido</h1>
+        <h1 class="error-title">Access Forbidden</h1>
+        
+        <div class="divider"></div>
+        
         <p class="error-message">
-            No tienes permisos para acceder a este recurso. 
-            Si crees que esto es un error, contacta al administrador.
+            You don't have permission to access this resource. 
+            If you believe this is an error, please contact the administrator.
         </p>
         
-        <a href="/" class="btn btn-home"><span>🏠</span> Volver al inicio</a>
+        <div class="btn-container">
+            <a href="/" class="btn">
+                Go Home
+            </a>
+        </div>
     </div>
 </body>
 </html>
