@@ -138,3 +138,6 @@ LOGGING = {
         },
     },
 }
+
+# Configuración para mostrar páginas de error personalizadas incluso en DEBUG=True
+SHOW_CUSTOM_ERRORS = True
