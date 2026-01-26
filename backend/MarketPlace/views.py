@@ -1,3 +1,5 @@
+import logging 
+from django.views.decorators.cache import cache_page
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Product, Favorite, Order, UserProfile, ShoppingCart
@@ -32,6 +34,10 @@ SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
+logger = logging.getLogger(__name__)
+
+# ✅ ESTA ES LA FUNCIÓN main_page CORRECTA
+@cache_page(60 * 0.1)
 def main_page(request):
     products = Product.objects.filter(is_available=True, is_sold=False).order_by('-created_at')
 
@@ -53,6 +59,9 @@ def main_page(request):
 
 
 def login_view(request):
+   
+    logger.debug(f"Accessing login view. Method: {request.method}")
+
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -61,7 +70,16 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+               
+                logger.info(f"User logged in successfully: {username}")
                 return redirect('main_page')
+            else:
+               
+                logger.warning(f"Failed login attempt (Invalid credentials) for user: {username}")
+                form = AuthenticationForm()
+        else:
+             
+             logger.warning("Failed login attempt: Invalid form data provided.")
     else:
         form = AuthenticationForm()
     
@@ -69,6 +87,9 @@ def login_view(request):
 
 @login_required
 def acquire_product(request, product_id):
+    
+    logger.info(f"Transaction started: User {request.user.username} attempting to buy Product ID {product_id}")
+
     product = get_object_or_404(Product, id=product_id)
     profile = request.user.profile
 
@@ -80,21 +101,28 @@ def acquire_product(request, product_id):
             quantity=1,
             total_price=product.price,
         )
+        
+        logger.info(f"Order created successfully for Product ID {product_id}")
+
     except ValidationError as e:
+        
+        logger.warning(f"Transaction failed validation for Product ID {product_id}: {str(e)}")
         return render(request, "error.html", {"message": str(e)})
 
     product.is_sold = True
     product.is_available = False
     product.save()
 
+    
+    logger.info(f"Product ID {product_id} marked as SOLD.")
+
     return render(request, "successful.html", {"product": product})
-
-
-
-
 
 @login_required
 def user_profile(request):
+    
+    logger.debug(f"Rendering profile page for user: {request.user.username}")
+
     profile = request.user.profile
     purchased_products = Product.objects.filter(
         order__buyer=profile
@@ -119,14 +147,15 @@ def user_profile(request):
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
     })
 
-
-
-
 @login_required
 def upgrade_to_seller(request):
     profile = request.user.profile
     profile.is_premium = True
     profile.save()
+
+    
+    logger.info(f"User upgraded to SELLER status: {request.user.username}")
+
     return redirect('user_profile')
 
 
@@ -162,6 +191,9 @@ def create_product(request):
             except Exception as e:
                 print(f"Error: {e}")
 
+        
+        logger.info(f"User {request.user.username} creating product: {name}")
+
         Product.objects.create(
             seller=request.user.profile,
             name=name,
@@ -172,13 +204,14 @@ def create_product(request):
             image=image,
             is_sold=False,
         )
+        
+       
+        logger.info(f"Product created successfully: {name}")
 
         return redirect('user_profile')
 
     locations = Location.objects.all()
     return render(request, 'create_product.html', {'locations': locations} )
-
-
 
 
 def register_view(request):
@@ -278,6 +311,7 @@ def upgrade_success(request):
 
 
 from django.conf import settings 
+@cache_page(60 * 5)
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
@@ -426,5 +460,3 @@ def create_multi_checkout(request):
 @login_required
 def multi_success(request):
     return render(request, "multi_success.html")
-
-
