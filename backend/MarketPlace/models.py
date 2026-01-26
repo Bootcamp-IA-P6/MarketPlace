@@ -47,9 +47,11 @@ class Product(models.Model):
 class Favorite(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'product')
+        ordering = ['-created_at']
 
 
 class Order(models.Model):
@@ -82,4 +84,9 @@ def save_user_profile(sender, instance, **kwargs):
 class ShoppingCart(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='shopping_cart')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'product')
+        ordering = ['-created_at']
 
