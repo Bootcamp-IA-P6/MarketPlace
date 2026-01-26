@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Marketplace - Product Detail</title>
+</head>
+
+<body>
+    <h1>Product Detail</h1>
+    <div>
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.description }}</p>
+        <p><strong>Location:</strong> {{ product.location }}</p>
+        <p><strong>Price:</strong> {{ product.price }}€</p>
+        <p><strong>Seller:</strong> {{ product.seller.username }}</p>
+        <img src="{{ product.image.url }}" alt="Product Image">
+    </div>
+    <a href="{% url 'main_page' %}">Back to Products</a>
+    <a href="{% url 'acquire_product' product.id %}">Acquire</a>
+</body>
+
+</html>

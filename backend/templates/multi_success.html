@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Multi Success</title>
+</head>
+
+<body>
+    <h1>Multi Success</h1>
+    <p>You have successfully purchased multiple products.</p>
+    <a href="{% url 'main_page' %}">Back to Shop</a>
+    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
+    <a href="{% url 'shopping_cart' %}"><button type="button">My Shopping Cart</button></a>
+    <a href="{% url 'favorites' %}"><button type="button">My Favorites</button></a>
+</body>
+
+</html>
