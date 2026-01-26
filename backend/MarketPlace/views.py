@@ -33,7 +33,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 def main_page(request):
-    products = Product.objects.filter(is_available=True, is_sold=False)
+    products = Product.objects.filter(is_available=True, is_sold=False).order_by('-created_at')
 
     cart_products = []
     if request.user.is_authenticated:
@@ -329,7 +329,7 @@ def toggle_favorites(request, product_id):
 @login_required
 def favorites(request):
     profile = request.user.profile
-    favorite_products = profile.favorites.filter(is_available=True)
+    favorite_products = profile.favorites.filter(is_available=True).order_by('-created_at')
 
 
     return render(request, "favorites.html", {"favorite_products": favorite_products})
@@ -341,7 +341,7 @@ def shopping_cart(request):
     shopping_cart_products = profile.shopping_cart.select_related("product").filter(
         product__is_available=True,
         product__is_sold=False
-    )
+    ).order_by('-created_at')
 
     return render(
         request,
