@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Product, Favorite, Order, UserProfile
+from .models import Product, Favorite, Order, UserProfile, ShoppingCart
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ValidationError
@@ -18,10 +18,11 @@ from django.conf import settings
 import stripe
 from .models import Product
 from .models import UserProfile
-
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+import json
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -32,9 +33,23 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 def main_page(request):
-    products = Product.objects.filter(is_sold=False, is_available=True) 
-    return render(request, 'main.html', { 'products': products, 'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,})
+    products = Product.objects.filter(is_available=True, is_sold=False)
 
+    cart_products = []
+    if request.user.is_authenticated:
+        cart_products = list(
+            request.user.profile.shopping_cart.values_list("product_id", flat=True)
+        )
+
+    return render(
+        request,
+        "main.html",
+        {
+            "products": products,
+            "cart_products": cart_products,
+            "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+        }
+    )
 
 
 def login_view(request):
@@ -230,7 +245,7 @@ def create_upgrade_session(request):
         metadata={
             "user_id": request.user.id,
         },
-        success_url="http://127.0.0.1:8000/upgrade-success",
+        success_url="http://127.0.0.1:8000/successful/",
         cancel_url="http://127.0.0.1:8000/profile",
     )
 
@@ -318,3 +333,98 @@ def favorites(request):
 
 
     return render(request, "favorites.html", {"favorite_products": favorite_products})
+
+
+@login_required
+def shopping_cart(request):
+    profile = request.user.profile
+    shopping_cart_products = profile.shopping_cart.select_related("product").filter(
+        product__is_available=True,
+        product__is_sold=False
+    )
+
+    return render(
+        request,
+        "shopping_cart.html",
+        {"shopping_cart_products": shopping_cart_products}
+    )
+
+
+
+@login_required
+def toggle_shopping_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    profile = request.user.profile
+
+    cart_item = ShoppingCart.objects.filter(
+        user=profile,
+        product=product
+    ).first()
+
+    if cart_item:
+        cart_item.delete()
+        return JsonResponse({"success": True, "action": "removed"})
+    else:
+        ShoppingCart.objects.create(
+            user=profile,
+            product=product
+        )
+        return JsonResponse({"success": True, "action": "added"})
+
+
+@login_required
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id) 
+
+    cart_products = []
+    if request.user.is_authenticated:
+        cart_products = list(
+            request.user.profile.shopping_cart.values_list("product_id", flat=True)
+        )
+
+    return render(request, "product_detail.html", {
+        "product": product,
+        "cart_products": cart_products,
+        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+    })
+
+
+@csrf_exempt
+@login_required
+def create_multi_checkout(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=400)
+
+    data = json.loads(request.body)
+    product_ids = data.get("products", [])
+
+    line_items = []
+
+    for pid in product_ids:
+        product = Product.objects.get(id=pid)
+        line_items.append({
+            "price_data": {
+                "currency": "eur",
+                "product_data": {"name": product.name},
+                "unit_amount": int(product.price * 100),
+            },
+            "quantity": 1,
+        })
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=line_items,
+        mode="payment",
+        success_url="http://127.0.0.1:8000/multi-success/",
+        cancel_url="http://127.0.0.1:8000/shopping-cart/",
+    )
+
+    return JsonResponse({"checkout_url": session.url})
+
+
+
+@login_required
+def multi_success(request):
+    return render(request, "multi_success.html")
+
+
