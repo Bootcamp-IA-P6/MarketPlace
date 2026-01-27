@@ -329,7 +329,7 @@ def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if product.seller != request.user.profile:
-        return render(request, "error.html", {"message": "You don't have permission to delete this product."})
+        return render(request, "error/error.html", {"message": "You don't have permission to delete this product."})
 
     if product.image:
         try:
@@ -459,3 +459,18 @@ def create_multi_checkout(request):
 @login_required
 def multi_success(request):
     return render(request, "multi_success.html")
+
+
+def preview_400(request):
+    return render(request, 'error/400.html', status=400)
+
+def preview_403(request):
+    return render(request, 'error/403.html', status=403)
+
+def preview_404(request):
+    return render(request, 'error/404.html', status=404)
+
+def preview_500(request):
+    return render(request, 'error/500.html', status=500)
+
+

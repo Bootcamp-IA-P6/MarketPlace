@@ -1,10 +1,17 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.conf import settings
 from . import views
 from .models import Product
 from django.conf import settings
 from django.conf.urls.static import static
+
+# Configuración de manejadores de error personalizados
+handler400 = 'MarketPlace.error_views.handler400'
+handler403 = 'MarketPlace.error_views.handler403'  
+handler404 = 'MarketPlace.error_views.handler404'
+handler500 = 'MarketPlace.error_views.handler500'
 
 urlpatterns = [
     path('', views.main_page, name='main_page'),
@@ -31,3 +38,12 @@ urlpatterns = [
 
     
 ]
+
+# URLs para preview de errores (solo en desarrollo)
+if settings.DEBUG:
+    urlpatterns += [
+        path('preview/404/', views.preview_404, name='preview_404'),
+        path('preview/500/', views.preview_500, name='preview_500'),
+        path('preview/403/', views.preview_403, name='preview_403'),
+        path('preview/400/', views.preview_400, name='preview_400'),
+    ]
