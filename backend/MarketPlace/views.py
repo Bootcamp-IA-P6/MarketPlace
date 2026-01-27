@@ -36,7 +36,6 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 logger = logging.getLogger(__name__)
 
-# ✅ ESTA ES LA FUNCIÓN main_page CORRECTA
 @cache_page(60 * 0.1)
 def main_page(request):
     products = Product.objects.filter(is_available=True, is_sold=False).order_by('-created_at')
