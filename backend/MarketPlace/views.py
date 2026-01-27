@@ -25,7 +25,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 import json
-
+from django.conf import settings 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -310,17 +310,17 @@ def upgrade_success(request):
 
 
 from django.conf import settings 
-@cache_page(60 * 5)
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+# @cache_page(60 * 5)
+# def product_detail(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
 
-    if not product.is_available or product.is_sold:
-        return render(request, "product_unavailable.html")
+#     if not product.is_available or product.is_sold:
+#         return render(request, "product_unavailable.html")
 
-    return render(request, "product_detail.html", {
-        "product": product,
-        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
-    })
+#     return render(request, "product_detail.html", {
+#         "product": product,
+#         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
+#     })
 
 
 
