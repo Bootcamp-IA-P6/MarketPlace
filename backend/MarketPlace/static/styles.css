@@ -1,178 +1,32 @@
-/* CONTENEDOR GENERAL */
-.hero-carousel {
-    width: 100%;
-    padding: 60px 0;
-    overflow: hidden;
-    position: relative;
-}
+/* ========================= */
+/* BASE */
+/* ========================= */
 
-/* SWIPER */
-.mySwiper {
-    width: 100%;
-    padding-bottom: 60px;
-}
-
-/* CADA SLIDE */
-.swiper-slide {
-    width: 680px;
-    /* tamaño fijo */
-    height: 420px;
-    background: #f2f2f2;
-    border-radius: 28px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* LINK */
-.slide-link {
-    width: 100%;
-    height: 100%;
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    position: relative;
-}
-
-/* IMAGEN */
-.slide-link img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* 🔥 CLAVE */
-    display: block;
-}
-
-/* TEXTO */
-.slide-info {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: #b6ff00;
-}
-
-.slide-info h2 {
-    font-size: 28px;
+/* Remove default browser margin */
+body {
     margin: 0;
 }
 
-.slide-info p {
-    font-size: 18px;
-    margin: 5px 0 0;
-}
-
-@media (max-width: 768px) {
-    .swiper-slide {
-        width: 300px;
-        height: 400px;
-    }
-
-    .slide-info h2 {
-        font-size: 22px;
-    }
-}
-
-.carousel-container {
-    max-width: 1600px;
-    /* 🔑 controla el tamaño visual */
-    margin: 0 auto;
-    /* centra */
-    padding: 40px 0;
-    overflow: hidden;
-}
-
-.swiper-button-prev,
-.swiper-button-next {
-    width: 48px;
-    height: 48px;
-
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(8px);
-
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-
-    opacity: 0;
-    pointer-events: none;
-
-    transition: all 0.35s ease;
-
-    z-index: 20;
-}
-
-.swiper-button-prev {
-    left: 24px;
-}
-
-.swiper-button-next {
-    right: 24px;
-}
-
-
-.hero-carousel:hover .swiper-button-prev,
-.hero-carousel:hover .swiper-button-next {
-    opacity: 1;
-}
-
-/* Los botones SIEMPRE encima */
-.swiper-button-prev,
-.swiper-button-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 9999;
-    pointer-events: all;
-}
-
-/* Evita que los slides bloqueen el click */
-.swiper-slide {
-    pointer-events: none;
-}
-
-.swiper-slide-active {
-    pointer-events: auto;
-}
-
-
-.swiper-button-prev:hover,
-.swiper-button-next:hover {
-    transform: translateY(-50%) scale(1.15);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
-}
-
-
-.swiper-button-prev:active,
-.swiper-button-next:active {
-    transform: translateY(-50%) scale(1.05);
-}
-
-/* 🔥 ELIMINA EL ICONO AZUL DE SWIPER */
-.swiper-button-prev::after,
-.swiper-button-next::after {
-    content: "";
-}
-
+/* ========================= */
 /* NAVBAR */
+/* ========================= */
+
+/* Top navigation bar */
 .navbar {
     height: 72px;
     display: flex;
     align-items: center;
     overflow: hidden;
 
-
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    position: relative;
+    /* Needed for the bottom gradient line */
 }
 
+/* Subtle bottom line */
 .navbar::after {
     content: "";
     position: absolute;
@@ -186,44 +40,40 @@
             transparent);
 }
 
-
+/* Navbar layout container */
 .nav-inner {
     width: 100%;
-    max-width: 0 50px;
     padding: 0 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-/* LOGO */
+/* Left block (logo) */
+.nav-left {
+    height: 100%;
+    max-width: 260px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Logo image (keep your size) */
 .logo {
     height: 100%;
-    /* ⬅️ usa la altura del navbar */
     max-height: 98px;
-    /* ⬅️ controla el tamaño real */
     width: auto;
     object-fit: contain;
 }
 
-/* ICONOS */
+/* Right block (icons + buttons) */
 .nav-right {
     display: flex;
     align-items: center;
     gap: 22px;
 }
 
-.nav-left {
-    height: 100%;
-    max-width: 260px;
-    /* limita el ancho del logo */
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-}
-
-
-
+/* Icon button wrapper */
 .icon-btn {
     background: none;
     border: none;
@@ -233,8 +83,11 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.25s ease, opacity 0.25s ease;
+    text-decoration: none;
+    /* So <a> looks clean */
 }
 
+/* SVG icon style */
 .icon {
     width: 22px;
     height: 22px;
@@ -243,14 +96,13 @@
     stroke-width: 1.8;
 }
 
-.icon-btn:hover .icon {
-    stroke: #000;
-    transform: scale(1.1);
+/* Icon hover effect */
+.icon-btn:hover {
     transform: translateY(-2px);
     opacity: 0.75;
 }
 
-/* LOGIN */
+/* Main nav buttons (profile / login / logout) */
 .login-btn {
     height: 40px;
     padding: 0 18px;
@@ -265,9 +117,9 @@
     display: flex;
     align-items: center;
     transition: all 0.25s ease;
-
 }
 
+/* Button hover */
 .login-btn:hover {
     background: #000;
     color: #fff;
@@ -275,147 +127,138 @@
 }
 
 
-body {
-    margin: 0;
-}
+/* ========================= */
+/* HERO CAROUSEL (Swiper) */
+/* ========================= */
 
-/* SEARCH SECTION */
-.search-section {
+/* Carousel section wrapper */
+.hero-carousel {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 10px 0 60px;
-}
-
-.search-wrapper {
-    width: 100%;
-    max-width: 720px;
-    height: 56px;
-
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    padding: 0 20px;
-
-    background: #fff;
-    border-radius: 12px;
-
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-
-    transition: all 0.25s ease;
-}
-
-.search-wrapper:focus-within {
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
-    border-color: rgba(0, 0, 0, 0.15);
-}
-
-/* ICON */
-.search-icon {
-    width: 22px;
-    height: 22px;
-    stroke: #777;
-    fill: none;
-    stroke-width: 1.8;
-}
-
-/* INPUT */
-.search-input {
-    flex: 1;
-    height: 100%;
-
-    border: none;
-    outline: none;
-
-    font-size: 16px;
-    font-weight: 500;
-    color: #111;
-}
-
-.search-input::placeholder {
-    color: #999;
-}
-
-.products-grid {
-    max-width: 1400px;
-    margin: 80px auto;
-    padding: 0 32px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 28px;
-}
-
-/* CARD */
-.product-card {
-    cursor: pointer;
-}
-
-/* IMAGE */
-.product-image {
-    position: relative;
-    width: 100%;
-    height: 280px;
-    border-radius: 16px;
+    padding: 60px 0;
     overflow: hidden;
-    background: #f1f1f1;
+    position: relative;
+    /* For nav arrows positioning */
 }
 
-.image-placeholder {
+/* Swiper container */
+.mySwiper {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 0 70px;
+    /* Top / bottom spacing */
+}
+
+/* Each slide card */
+.hero-carousel .swiper-slide {
+    height: 420px;
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    background: #f2f2f2;
+}
+
+/* Full-cover slide image */
+.hero-carousel .swiper-slide img {
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        120deg,
-        #eee 30%,
-        #f5f5f5 50%,
-        #eee 70%
-    );
+    object-fit: cover;
+    display: block;
 }
 
-/* LIKE */
-.like-badge {
+/* Slide link covers the whole card */
+.slide-link {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Text overlay inside slide */
+.slide-info {
     position: absolute;
-    bottom: 12px;
-    right: 12px;
-    background: #fff;
-    border-radius: 20px;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #b6ff00;
 }
 
-.like-badge svg {
-    width: 16px;
-    height: 16px;
-    stroke: #000;
-    fill: none;
-    stroke-width: 1.8;
-}
-
-/* INFO */
-.product-info {
-    margin-top: 10px;
-}
-
-.product-info h3 {
-    font-size: 14px;
+/* Title styling */
+.slide-info h2 {
+    font-size: 28px;
     margin: 0;
 }
 
-.condition {
-    font-size: 13px;
-    color: #777;
-    margin: 4px 0;
+/* Price styling */
+.slide-info p {
+    font-size: 18px;
+    margin: 5px 0 0;
 }
 
-.price {
-    font-size: 15px;
-    font-weight: 600;
+/* Swiper arrows */
+.swiper-button-prev,
+.swiper-button-next {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9999;
+    pointer-events: auto;
+
+    opacity: 0;
+    /* Hidden until hover */
+    transition: all 0.35s ease;
 }
 
+/* Arrow positions */
+.swiper-button-prev {
+    left: 24px;
+}
 
+.swiper-button-next {
+    right: 24px;
+}
 
+/* Show arrows on carousel hover */
+.hero-carousel:hover .swiper-button-prev,
+.hero-carousel:hover .swiper-button-next {
+    opacity: 1;
+}
+
+/* Remove default Swiper arrow icon */
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    content: "";
+}
+
+/* Arrow hover effect */
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    transform: translateY(-50%) scale(1.15);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Arrow active effect */
+.swiper-button-prev:active,
+.swiper-button-next:active {
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Mobile: smaller slide height */
+@media (max-width: 768px) {
+    .hero-carousel .swiper-slide {
+        height: 400px;
+    }
+
+    .slide-info h2 {
+        font-size: 22px;
+    }
+}

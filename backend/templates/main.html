@@ -3,290 +3,181 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Looping Marketplace</title>
 
-    <!-- Swiper CSS -->
+    <!-- Swiper styles (carousel library) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-    <!-- Tu CSS -->
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <!-- Project main stylesheet -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+
+    <!-- SweetAlert2 (nice popups) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Stripe checkout library -->
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 
 <body>
-<<<<<<< HEAD
-
-
-
-    <hr>
 
     <!-- ========================= -->
-    <!-- LISTA DE PRODUCTOS REAL -->
+    <!-- NAVBAR -->
     <!-- ========================= -->
-    {% if not design_mode %}
-=======
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <h1>Looping Marketplace</h1>
-
-    <nav>
-        {% if user.is_authenticated %}
-
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button class="gray-btn" type="submit">Logout</button>
-        </form>
-
-        <a href="{% url 'user_profile' %}">
-            <button class="gray-btn" type="button">My Profile</button>
-        </a>
-
-        <a href="{% url 'shopping_cart' %}">
-            <button class="gray-btn" type="button">Shopping Cart</button>
-        </a>
-
-        <a href="{% url 'favorites' %}">
-            <button class="gray-btn" type="button">Favorites</button>
-        </a>
-
-        {% else %}
-
-        <a href="{% url 'login' %}">
-            <button class="gray-btn" type="button">Login</button>
-        </a>
-
-        {% endif %}
-    </nav>
-
-    <hr>
-
->>>>>>> origin/dev
-    <ul>
-        {% for product in products %}
-        <li>
-            <a href="{% url 'product_detail' product.id %}">
-                <strong>{{ product.name }}</strong>
-            </a>
-            - {{ product.price }}€
-
-            {% if user.is_authenticated and product.seller.user != user %}
-            <button type="button" id="fav-btn-{{ product.id }}" onclick="handleFavorite('{{ product.id }}')"
-                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
-
-                {% if product in user.profile.favorites.all %}
-                Remove from Favorites ❤️
-                {% else %}
-                Add to Favorites 🤍
-                {% endif %}
-
-            </button>
-            {% endif %}
-
-            {% if user.is_authenticated and product.seller.user != user %}
-            <button type="button" id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
-                style="cursor:pointer; background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
-
-                {% if product.id in cart_products %} Remove from Cart 🛒❌ {% else %} Add to Cart 🛒 {% endif %}
-
-            </button>
-            {% endif %}
-
-
-
-            <p>{{ product.description }}</p>
-            <p><small>Seller: {{ product.seller.user.username }}</small></p>
-            <p><small>Location: {{ product.location.city_name }}, {{ product.location.country_name }}</small></p>
-
-            {% if user.is_authenticated %}
-            {% if product.seller.user != user %}
-
-            <button onclick="confirmPurchase('{{ product.id }}')"
-                style="background-color: green; color: white; border: none; padding: 6px 12px; cursor: pointer;">
-                Buy
-            </button>
-
-            {% else %}
-
-            <button onclick="confirmDelete('{{ product.id }}')"
-                style="background-color: red; color: white; border: none; padding: 6px 12px; cursor: pointer;">
-                Delete product
-            </button>
-
-            {% endif %}
-            {% else %}
-            <a href="{% url 'login' %}">
-                <button type="button">Login to buy</button>
-            </a>
-            {% endif %}
-
-            <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 200px; height: auto;">
-        </li>
-        <hr>
-        {% empty %}
-        <li>No products available.</li>
-        {% endfor %}
-    </ul>
-<<<<<<< HEAD
-    {% endif %}
-
     <header class="navbar">
         <div class="nav-inner">
 
-            <!-- LOGO -->
+            <!-- Brand logo -->
             <div class="nav-left">
                 <img src="{% static 'images/logo.png' %}" alt="Looping" class="logo">
             </div>
 
-            <!-- ICONOS -->
+            <!-- Right side actions (auth-based) -->
             <div class="nav-right">
 
-                <!-- FAVORITOS -->
-                <button class="icon-btn" aria-label="Favorites">
+                {% if user.is_authenticated %}
+                <!-- Favorites link -->
+                <a href="{% url 'favorites' %}" class="icon-btn" aria-label="Favorites" style="text-decoration:none;">
                     <svg viewBox="0 0 24 24" class="icon">
                         <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
                     </svg>
-                </button>
+                </a>
 
-                <!-- CARRITO -->
-                <button class="icon-btn" aria-label="Cart">
+                <!-- Shopping cart link -->
+                <a href="{% url 'shopping_cart' %}" class="icon-btn" aria-label="Cart" style="text-decoration:none;">
                     <svg viewBox="0 0 24 24" class="icon">
                         <path d="M6 6h15l-2 9H7L6 6z" />
                         <circle cx="9" cy="20" r="1.5" />
                         <circle cx="18" cy="20" r="1.5" />
                     </svg>
-                </button>
-
-                <!-- LOGIN -->
-                <a href="{% url 'login' %}" class="login-btn">
-                    LOG IN
                 </a>
+
+                <!-- Profile page -->
+                <a href="{% url 'user_profile' %}" class="login-btn">MY PROFILE</a>
+
+                <!-- Logout (must be POST) -->
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="login-btn" style="cursor:pointer;">LOG OUT</button>
+                </form>
+
+                {% else %}
+                <!-- Guests: redirect to login when clicking icons -->
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="icon-btn"
+                    aria-label="Favorites" style="text-decoration:none;">
+                    <svg viewBox="0 0 24 24" class="icon">
+                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
+                    </svg>
+                </a>
+
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="icon-btn"
+                    aria-label="Cart" style="text-decoration:none;">
+                    <svg viewBox="0 0 24 24" class="icon">
+                        <path d="M6 6h15l-2 9H7L6 6z" />
+                        <circle cx="9" cy="20" r="1.5" />
+                        <circle cx="18" cy="20" r="1.5" />
+                    </svg>
+                </a>
+
+                <!-- Login button -->
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="login-btn">LOG IN</a>
+                {% endif %}
 
             </div>
         </div>
     </header>
 
     <!-- ========================= -->
-    <!-- HERO CAROUSEL (DISEÑO) -->
+    <!-- HERO CAROUSEL -->
     <!-- ========================= -->
-    {% if design_mode %}
     <section class="hero-carousel">
         <div class="swiper mySwiper">
             <div class="swiper-wrapper">
 
+                {# Real products (max 5) #}
+                {% for product in products|slice:":5" %}
                 <div class="swiper-slide">
-                    <img src="{% static 'images/product-placeholder.jpg' %}">
-                    <div class="slide-info">
-                        <h2>Bolso Premium</h2>
-                        <p>€35.00</p>
-                    </div>
+                    <!-- Click slide to open product detail page -->
+                    <a class="slide-link" href="{% url 'product_detail' product.id %}">
+                        <img src="{{ product.image }}" alt="{{ product.name }}">
+                        <div class="slide-info">
+                            <h2>{{ product.name }}</h2>
+                            <p>€{{ product.price }}</p>
+                        </div>
+                    </a>
                 </div>
+                {% endfor %}
 
-                <div class="swiper-slide">
-                    <img src="{% static 'images/product-placeholder.jpg' %}">
-                    <div class="slide-info">
-                        <h2>Bolso Clásico</h2>
-                        <p>€42.00</p>
-                    </div>
-                </div>
+                {# Fill remaining slots with placeholders until we reach 5 slides #}
+                {% with total=products|slice:":5"|length %}
 
-                <div class="swiper-slide">
-                    <img src="{% static 'images/product-placeholder.jpg' %}">
-                    <div class="slide-info">
-                        <h2>Bolso Minimal</h2>
-                        <p>€29.00</p>
-                    </div>
+                {% if total == 0 %}
+                {# No products: show 5 placeholders #}
+                {% for _ in "12345" %}
+                <div class="swiper-slide is-placeholder">
+                    <img src="{% static 'images/product-placeholder.jpg' %}" alt="Placeholder">
                 </div>
+                {% endfor %}
 
-                <div class="swiper-slide">
-                    <img src="{% static 'images/product-placeholder.jpg' %}">
-                    <div class="slide-info">
-                        <h2>Bolso Minimal</h2>
-                        <p>€29.00</p>
-                    </div>
+                {% elif total == 1 %}
+                {# 1 product: add 4 placeholders #}
+                {% for _ in "1234" %}
+                <div class="swiper-slide is-placeholder">
+                    <img src="{% static 'images/product-placeholder.jpg' %}" alt="Placeholder">
                 </div>
+                {% endfor %}
 
-                <div class="swiper-slide">
-                    <img src="{% static 'images/product-placeholder.jpg' %}">
-                    <div class="slide-info">
-                        <h2>Bolso Minimal</h2>
-                        <p>€29.00</p>
-                    </div>
+                {% elif total == 2 %}
+                {# 2 products: add 3 placeholders #}
+                {% for _ in "123" %}
+                <div class="swiper-slide is-placeholder">
+                    <img src="{% static 'images/product-placeholder.jpg' %}" alt="Placeholder">
                 </div>
+                {% endfor %}
+
+                {% elif total == 3 %}
+                {# 3 products: add 2 placeholders #}
+                {% for _ in "12" %}
+                <div class="swiper-slide is-placeholder">
+                    <img src="{% static 'images/product-placeholder.jpg' %}" alt="Placeholder">
+                </div>
+                {% endfor %}
+
+                {% elif total == 4 %}
+                {# 4 products: add 1 placeholder #}
+                <div class="swiper-slide is-placeholder">
+                    <img src="{% static 'images/product-placeholder.jpg' %}" alt="Placeholder">
+                </div>
+                {% endif %}
+
+                {% endwith %}
 
             </div>
 
-            <!-- Botones -->
+            <!-- Carousel arrows -->
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
-
-
         </div>
-
     </section>
-    {% endif %}
 
     <!-- ========================= -->
-    <!-- SCRIPTS -->
+    <!-- JS FILES -->
     <!-- ========================= -->
+    <!-- Swiper core script -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Your carousel setup -->
     <script src="{% static 'carousel.js' %}"></script>
 
-
-    <!-- SEARCH BAR -->
-    <section class="search-section">
-        <div class="search-wrapper">
-            <svg class="search-icon" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="7" />
-                <line x1="16.5" y1="16.5" x2="22" y2="22" />
-            </svg>
-
-            <input type="text" placeholder="Buscar productos..." class="search-input" />
-        </div>
-    </section>
-
-<section class="products-grid">
-    {% for product in products %}
-    <article class="product-card">
-
-      <div class="product-image">
-  {% if not design_mode and product.image %}
-    <img src="{{ product.image.url }}" alt="{{ product.name }}">
-  {% else %}
-    <div class="image-placeholder"></div>
-  {% endif %}
-
-  <div class="like-badge">
-    ♥ {{ product.likes }}
-  </div>
-</div>
-
-
-        <!-- info -->
-        <div class="product-info">
-            <h3>{{ product.name }}</h3>
-            <p class="condition">{{ product.condition }}</p>
-            <p class="price">{{ product.price }}</p>
-        </div>
-
-    </article>
-    {% endfor %}
-</section>
-
-
-
-
-</body>
-
-</html>
-=======
-
-    <script src="https://js.stripe.com/v3/"></script>
     <script>
+        // Stripe client (public key)
         const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
 
+        // Auth flag used by buttons
         const isAuthenticated = "{% if user.is_authenticated %}true{% else %}false{% endif %}" === "true";
 
-
+        // Toggle favorites (with login guard)
         function handleFavorite(productId) {
             if (!isAuthenticated) {
                 Swal.fire({
@@ -294,13 +185,11 @@
                     text: 'You must be logged in to manage favorites. Do you want to login?',
                     icon: 'info',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#aaa',
                     confirmButtonText: 'Yes, login',
                     cancelButtonText: 'No'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = "{% url 'login' %}";
+                        window.location.href = "{% url 'login' %}?next={{ request.get_full_path|urlencode }}";
                     }
                 });
                 return;
@@ -315,113 +204,62 @@
                     text: 'Do you want to remove this from favorites?',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
                     confirmButtonText: 'Yes, remove it',
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
-
                         executeToggle(productId);
-
-                        Swal.fire({
-                            title: 'Removed!',
-                            text: 'The product has been removed.',
-                            icon: 'success',
-                            timer: 1000,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.reload();
-                        });
+                        Swal.fire({ title: 'Removed!', icon: 'success', timer: 1000, showConfirmButton: false })
+                            .then(() => window.location.reload());
                     }
                 });
             } else {
-
                 executeToggle(productId);
-
-                Swal.fire({
-                    title: 'Added!',
-                    text: 'Product added to favorites.',
-                    icon: 'success',
-                    timer: 1000,
-                    showConfirmButton: false
-                });
+                Swal.fire({ title: 'Added!', icon: 'success', timer: 1000, showConfirmButton: false });
             }
-
         }
 
+        // Favorites request (AJAX)
         function executeToggle(productId) {
             fetch(`/toggle-favorites/${productId}/`, {
                 method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-                .then(res => {
-                    if (!res.ok) throw new Error('Error');
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(data => {
                     if (data.success) {
                         const btn = document.getElementById(`fav-btn-${productId}`);
-                        if (data.action === "added") {
-                            btn.innerHTML = "Remove from Favorites ❤️";
-                        } else {
-                            btn.innerHTML = "Add to Favorites 🤍";
-                        }
+                        btn.innerHTML = (data.action === "added") ? "Remove ❤️" : "Fav 🤍";
                     }
                 })
-                .catch(err => {
-                    console.error("Error:", err);
-                });
+                .catch(err => console.error("Error:", err));
         }
 
+        // Stripe purchase confirmation
         function confirmPurchase(productId) {
             Swal.fire({
                 title: 'Looping',
                 text: 'Are you sure you want to buy this product?',
                 iconHtml: '🛒',
                 showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, buy',
                 cancelButtonText: 'Cancel'
-            })
-                .then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: 'Looping to checkout...',
-                            text: 'Redirecting to checkout...',
-                            icon: 'success',
-                            timer: 1000,
-                            showConfirmButton: true
-                        });
-                        fetch(`/create-checkout-session/${productId}/`)
-                            .then(res => res.json())
-                            .then(data => {
-                                stripe.redirectToCheckout({ sessionId: data.id });
-                            });
-                    } else {
-                        Swal.fire({
-                            title: 'Cancelled',
-                            text: 'Purchase cancelled.',
-                            icon: 'error',
-                            timer: 1000,
-                            showConfirmButton: false
-                        });
-                    }
-                });
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/create-checkout-session/${productId}/`)
+                        .then(res => res.json())
+                        .then(data => stripe.redirectToCheckout({ sessionId: data.id }));
+                }
+            });
         }
 
+        // Delete confirmation (owner only)
         function confirmDelete(productId) {
             Swal.fire({
                 title: 'Looping',
                 text: 'Are you sure you want to delete this product?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, delete',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
@@ -431,7 +269,7 @@
             });
         }
 
-
+        // Toggle cart (with login guard)
         function handleCart(productId) {
             if (!isAuthenticated) {
                 Swal.fire({
@@ -439,13 +277,11 @@
                     text: 'You must be logged in to manage your cart. Do you want to login?',
                     icon: 'info',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#aaa',
                     confirmButtonText: 'Yes, login',
                     cancelButtonText: 'No'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = "{% url 'login' %}";
+                        window.location.href = "{% url 'login' %}?next={{ request.get_full_path|urlencode }}";
                     }
                 });
                 return;
@@ -460,61 +296,37 @@
                     text: 'Remove this product from your cart?',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
                     confirmButtonText: 'Yes, remove',
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         executeCartToggle(productId);
-
-                        Swal.fire({
-                            title: 'Removed!',
-                            text: 'Product removed from cart.',
-                            icon: 'success',
-                            timer: 1000,
-                            showConfirmButton: false
-                        });
+                        Swal.fire({ title: 'Removed!', icon: 'success', timer: 1000, showConfirmButton: false });
                     }
                 });
             } else {
                 executeCartToggle(productId);
-
-                Swal.fire({
-                    title: 'Added!',
-                    text: 'Product added to cart.',
-                    icon: 'success',
-                    timer: 1000,
-                    showConfirmButton: false
-                });
+                Swal.fire({ title: 'Added!', icon: 'success', timer: 1000, showConfirmButton: false });
             }
         }
 
+        // Cart request (AJAX)
         function executeCartToggle(productId) {
             fetch(`/toggle-shopping-cart/${productId}/`, {
                 method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
-                    console.log(data);
-
                     if (data.success) {
                         const btn = document.getElementById(`cart-btn-${productId}`);
-                        if (data.action === "added") {
-                            btn.innerHTML = "Remove from Cart 🛒❌";
-                        } else {
-                            btn.innerHTML = "Add to Cart 🛒";
-                        }
+                        btn.innerHTML = (data.action === "added") ? "Remove 🛒❌" : "Add 🛒";
                     }
                 })
                 .catch(err => console.error("Error:", err));
         }
-
-
-
     </script>
+
 </body>
->>>>>>> origin/dev
+
+</html>
