@@ -287,7 +287,7 @@ def create_upgrade_session(request):
         metadata={
             "user_id": request.user.id,
         },
-        success_url="http://127.0.0.1:8000/successful/",
+        success_url="http://127.0.0.1:8000/upgrade_success/",
         cancel_url="http://127.0.0.1:8000/profile",
     )
 
