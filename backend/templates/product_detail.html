@@ -2,23 +2,48 @@
 <html lang="es">
 
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Looping - Product Detail</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    {% load static %}
 </head>
 
 <body>
 
-    <form action="{% url 'logout' %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+        <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
+                <img src="{% static 'images/loopingWlogo1.png' %}" alt="Looping" height="40"> </a>
+            <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
+                    class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
+                    </svg> </a> <a href="{% url 'shopping_cart' %}" class="btn btn-outline-info p-2" aria-label="Cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                        stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M6 6h15l-2 9H7L6 6z" />
+                        <circle cx="9" cy="20" r="1.5" />
+                        <circle cx="18" cy="20" r="1.5" />
+                    </svg> </a> <a href="{% url 'user_profile' %}" class="btn btn-info">My Profile</a>
+                <form action="{% url 'logout' %}" method="post" class="d-inline"> {% csrf_token %} <button type="submit"
+                        class="btn btn-info">Log Out</button> </form> {% else %} <a
+                    href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-info p-2"
+                    aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                        stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
+                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                    class="btn btn-outline-info p-2" aria-label="Cart"> <svg xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M6 6h15l-2 9H7L6 6z" />
+                        <circle cx="9" cy="20" r="1.5" />
+                        <circle cx="18" cy="20" r="1.5" />
+                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                    class="btn btn-info">Log In</a> {% endif %}
+            </div>
+        </div>
+    </nav>
 
-    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
-    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
-    <a href="{% url 'favorites' %}"><button type="button">Favorites</button></a>
-    <a href="{% url 'shopping_cart' %}"><button type="button">Shopping Cart</button></a>
 
     <h1>Product Detail</h1>
 
@@ -195,7 +220,7 @@
                 });
         }
     </script>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </body>
 
 </html>

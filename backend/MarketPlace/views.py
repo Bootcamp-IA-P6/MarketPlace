@@ -459,3 +459,15 @@ def create_multi_checkout(request):
 @login_required
 def multi_success(request):
     return render(request, "multi_success.html")
+
+def preview_404(request):
+    return render(request, '404.html')
+
+def preview_403(request):
+    return render(request, '403.html')
+
+def preview_400(request):
+    return render(request, '400.html')
+
+def preview_500(request):
+    return render(request, '500.html')

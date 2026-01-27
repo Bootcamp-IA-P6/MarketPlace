@@ -7,7 +7,6 @@ from .models import Product
 from django.conf import settings
 from django.conf.urls.static import static
 
-# Configuración de manejadores de error personalizados
 handler400 = 'MarketPlace.error_views.handler400'
 handler403 = 'MarketPlace.error_views.handler403'  
 handler404 = 'MarketPlace.error_views.handler404'
@@ -39,7 +38,6 @@ urlpatterns = [
     
 ]
 
-# URLs para preview de errores (solo en desarrollo)
 if settings.DEBUG:
     urlpatterns += [
         path('preview/404/', views.preview_404, name='preview_404'),
@@ -47,3 +45,5 @@ if settings.DEBUG:
         path('preview/403/', views.preview_403, name='preview_403'),
         path('preview/400/', views.preview_400, name='preview_400'),
     ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
