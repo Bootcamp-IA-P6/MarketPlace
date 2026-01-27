@@ -89,7 +89,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "MarketPlace.error_handlers.ErrorHandlingMiddleware",  # Nuestro middleware personalizado
+    #  "MarketPlace.error_handlers.ErrorHandlingMiddleware",  
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -112,10 +112,10 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
+        'verbose': {        
             'format': '{levelname} {asctime} {module} {message}',
             'style': '{',
-        },
+        },  
         'simple': {
             'format': '{levelname} {message}',
             'style': '{',
@@ -143,5 +143,4 @@ LOGGING = {
     },
 }
 
-# Configuración para mostrar páginas de error personalizadas incluso en DEBUG=True
 SHOW_CUSTOM_ERRORS = True
