@@ -5,6 +5,9 @@ import dj_database_url
 import environ
 import stripe
 
+
+from config_logs.logs import LOGGING_SETTINGS
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,8 +18,9 @@ ALLOWED_HOSTS = ["*"]
 
 DATABASES = {
     "default": dj_database_url.parse(
-        os.getenv("DATABASE_URL", "sqlite:///db.sqlite3"),
-        conn_max_age=600
+        os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=False
     )
 }
 
@@ -103,7 +107,7 @@ USE_I18N = True
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Configuración de logging para el manejo de errores
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
