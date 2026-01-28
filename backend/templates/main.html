@@ -48,12 +48,14 @@
         </div>
     </nav>
 
-    <hr>
+
 
     <div id="products-container" class="container my-5">
 
-        <img src="{% static 'images/logo3.png' %}" alt="Looping"
-            style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
+        <!-- <img src="{% static 'images/logo3.png' %}" alt="Looping"
+            style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a> -->
+
+
         {% if products %}
         <div class="d-flex flex-column gap-3" id="products-list">
             {% for product in products %}
@@ -455,4 +457,5 @@
 
 
     </script>
+    {% include 'footer.html' %}
 </body>

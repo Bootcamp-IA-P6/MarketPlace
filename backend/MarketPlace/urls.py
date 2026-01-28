@@ -34,7 +34,9 @@ urlpatterns = [
     path('toggle-shopping-cart/<int:product_id>/', views.toggle_shopping_cart, name='toggle_shopping_cart'),
     path("multi-success/", views.multi_success, name="multi_success"),
     path("create-multi-checkout/", views.create_multi_checkout, name="create_multi_checkout"),
-
+    path('about/', views.about, name='about'),
+    path('contact/', views.contact, name='contact'),
+    path('info/', views.info, name='info'),
     
 ]
 

@@ -1,0 +1,22 @@
+{% load static %}
+
+<footer class="bg-white border-top mt-4 py-2">
+    <div class="container text-center">
+
+        <a href="{% url 'main_page' %}">
+            <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                style="height: 50px; object-fit: contain; margin-bottom: 10px;">
+        </a>
+
+        <div class="d-flex justify-content-center gap-3 mb-2">
+            <a href="/about/" class="text-decoration-none text-secondary small">About Us</a>
+            <a href="/info/" class="text-decoration-none text-secondary small">Info</a>
+            <a href="/contact/" class="text-decoration-none text-secondary small">Contact</a>
+        </div>
+
+        <p class="text-muted small mb-0">
+            © {{ now|date:"Y" }} Looping Marketplace
+        </p>
+
+    </div>
+</footer>

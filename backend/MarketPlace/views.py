@@ -33,7 +33,6 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-
 logger = logging.getLogger(__name__)
 
 # @cache_page(60 * 0.1)
@@ -58,7 +57,6 @@ def main_page(request):
 
 
 def login_view(request):
-   
     logger.debug(f"Accessing login view. Method: {request.method}")
 
     if request.method == 'POST':
@@ -69,28 +67,31 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-               
                 logger.info(f"User logged in successfully: {username}")
                 return redirect('main_page')
             else:
-               
                 logger.warning(f"Failed login attempt (Invalid credentials) for user: {username}")
                 form = AuthenticationForm()
         else:
-             
-             logger.warning("Failed login attempt: Invalid form data provided.")
+            logger.warning("Failed login attempt: Invalid form data provided.")
     else:
         form = AuthenticationForm()
     
     return render(request, 'login.html', {'form': form})
 
+
 @login_required
 def acquire_product(request, product_id):
-    
     logger.info(f"Transaction started: User {request.user.username} attempting to buy Product ID {product_id}")
 
     product = get_object_or_404(Product, id=product_id)
     profile = request.user.profile
+
+    if product.seller == profile:
+        return render(request, "error.html", {"message": "No puedes comprar tu propio producto."})
+
+    if product.is_sold or not product.is_available:
+        return render(request, "error.html", {"message": "Este producto ya no está disponible."})
 
     try:
         Order.objects.create(
@@ -100,11 +101,9 @@ def acquire_product(request, product_id):
             quantity=1,
             total_price=product.price,
         )
-        
         logger.info(f"Order created successfully for Product ID {product_id}")
 
     except ValidationError as e:
-        
         logger.warning(f"Transaction failed validation for Product ID {product_id}: {str(e)}")
         return render(request, "error.html", {"message": str(e)})
 
@@ -112,31 +111,21 @@ def acquire_product(request, product_id):
     product.is_available = False
     product.save()
 
-    
     logger.info(f"Product ID {product_id} marked as SOLD.")
 
     return render(request, "successful.html", {"product": product})
 
+
 @login_required
 def user_profile(request):
-    
     logger.debug(f"Rendering profile page for user: {request.user.username}")
 
     profile = request.user.profile
-    purchased_products = Product.objects.filter(
-        order__buyer=profile
-    ).distinct()
-    favorite_products = Favorite.objects.filter(
-        user=profile
-    ).select_related('product')
-    selling_products = Product.objects.filter(
-        seller=profile,
-        is_sold=False
-    )
-    sold_products = Product.objects.filter(
-        seller=profile,
-        is_sold=True
-    )
+    purchased_products = Product.objects.filter(order__buyer=profile).distinct()
+    favorite_products = Favorite.objects.filter(user=profile).select_related('product')
+    selling_products = Product.objects.filter(seller=profile, is_sold=False)
+    sold_products = Product.objects.filter(seller=profile, is_sold=True)
+
     return render(request, 'profile.html', {
         'profile': profile,
         'purchased_products': purchased_products,
@@ -146,19 +135,17 @@ def user_profile(request):
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
     })
 
+
 @login_required
 def upgrade_to_seller(request):
     profile = request.user.profile
     profile.is_premium = True
     profile.save()
 
-    
     logger.info(f"User upgraded to SELLER status: {request.user.username}")
 
     return redirect('user_profile')
 
-
-from .models import Location
 
 @login_required
 def create_product(request):
@@ -185,12 +172,9 @@ def create_product(request):
                     file_options={"content-type": image_file.content_type}
                 )
                 image = supabase.storage.from_("products_images").get_public_url(f"public/{file_name}")
-                print("FILES:", request.FILES) 
-                print("IMAGE:", image)
             except Exception as e:
                 print(f"Error: {e}")
 
-        
         logger.info(f"User {request.user.username} creating product: {name}")
 
         Product.objects.create(
@@ -203,14 +187,13 @@ def create_product(request):
             image=image,
             is_sold=False,
         )
-        
-       
+
         logger.info(f"Product created successfully: {name}")
 
         return redirect('user_profile')
 
     locations = Location.objects.all()
-    return render(request, 'create_product.html', {'locations': locations} )
+    return render(request, 'create_product.html', {'locations': locations})
 
 
 def register_view(request):
@@ -255,9 +238,6 @@ def create_checkout_session(request, product_id):
     return JsonResponse({"id": session.id})
 
 
-
-
-
 def create_upgrade_session(request):
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -274,54 +254,30 @@ def create_upgrade_session(request):
                 "quantity": 1,
             }
         ],
-        metadata={
-            "user_id": request.user.id,
-        },
+        metadata={"user_id": request.user.id},
         success_url="http://127.0.0.1:8000/upgrade_success/",
         cancel_url="http://127.0.0.1:8000/profile",
     )
 
     return JsonResponse({"id": session.id})
 
+
 @login_required
 def successful(request, product_id):
+    """
+    YA NO CREA ÓRDENES NI MARCA PRODUCTOS COMO VENDIDOS.
+    Eso ya se hace en acquire_product().
+    """
     product = get_object_or_404(Product, id=product_id)
-
-    Order.objects.create(
-        buyer=request.user.profile,
-        seller=product.seller,
-        product=product,
-        quantity=1,
-        total_price=product.price,
-    )
-
-    product.is_sold = True
-    product.save()
-
     return render(request, "successful.html", {"product": product})
 
 
 @login_required
-def upgrade_success(request): 
+def upgrade_success(request):
     profile = UserProfile.objects.get(user=request.user)
     profile.is_premium = True 
     profile.save() 
     return render(request, "upgrade_success.html")
-
-
-from django.conf import settings 
-# @cache_page(60 * 5)
-# def product_detail(request, product_id):
-#     product = get_object_or_404(Product, id=product_id)
-
-#     if not product.is_available or product.is_sold:
-#         return render(request, "product_unavailable.html")
-
-#     return render(request, "product_detail.html", {
-#         "product": product,
-#         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
-#     })
-
 
 
 @login_required
@@ -338,11 +294,9 @@ def delete_product(request, product_id):
         except Exception as e:
             print("Error deleting image from Supabase:", e)
 
-
     product.delete()
 
     return redirect("user_profile")
-
 
 
 @login_required
@@ -358,12 +312,10 @@ def toggle_favorites(request, product_id):
         return JsonResponse({"success": True, "action": "added"})
 
 
-
 @login_required
 def favorites(request):
     profile = request.user.profile
     favorite_products = profile.favorites.filter(is_available=True).order_by('-created_at')
-
 
     return render(request, "favorites.html", {"favorite_products": favorite_products})
 
@@ -381,7 +333,6 @@ def shopping_cart(request):
         "shopping_cart.html",
         {"shopping_cart_products": shopping_cart_products}
     )
-
 
 
 @login_required
@@ -407,7 +358,7 @@ def toggle_shopping_cart(request, product_id):
 
 @login_required
 def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id) 
+    product = get_object_or_404(Product, id=product_id)
 
     cart_products = []
     if request.user.is_authenticated:
@@ -435,6 +386,13 @@ def create_multi_checkout(request):
 
     for pid in product_ids:
         product = Product.objects.get(id=pid)
+
+        if product.seller == request.user.profile:
+            return JsonResponse({"error": "Can't buy your own products"}, status=400)
+
+        if product.is_sold or not product.is_available:
+            return JsonResponse({"error": f"Product {product.name} is not available"}, status=400)
+
         line_items.append({
             "price_data": {
                 "currency": "eur",
@@ -443,6 +401,8 @@ def create_multi_checkout(request):
             },
             "quantity": 1,
         })
+
+    request.session["multi_product_ids"] = product_ids 
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -455,10 +415,30 @@ def create_multi_checkout(request):
     return JsonResponse({"checkout_url": session.url})
 
 
-
 @login_required
 def multi_success(request):
-    return render(request, "multi_success.html")
+    product_ids = request.session.get("multi_product_ids", [])
+    products = Product.objects.filter(id__in=product_ids)
+
+    profile = request.user.profile
+
+    for product in products:
+        if not product.is_sold:
+            Order.objects.create(
+                buyer=profile,
+                seller=product.seller,
+                product=product,
+                quantity=1,
+                total_price=product.price,
+            )
+            product.is_sold = True
+            product.is_available = False
+            product.save()
+
+    profile.shopping_cart.filter(product_id__in=product_ids).delete()
+
+    return render(request, "multi_success.html", {"products": products})
+
 
 def preview_404(request):
     return render(request, '404.html')
@@ -471,3 +451,15 @@ def preview_400(request):
 
 def preview_500(request):
     return render(request, '500.html')
+
+
+def about(request):
+    return render(request, 'about.html')
+
+
+def contact(request):
+    return render(request, 'contact.html')
+
+
+def info(request):
+    return render(request, 'info.html')

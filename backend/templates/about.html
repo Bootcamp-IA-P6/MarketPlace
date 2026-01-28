@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Looping</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <div class="container my-5">
+
+        <div class="mb-4 text-start">
+            <a href="{% url 'main_page' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+                ← Back to Main Page
+            </a>
+        </div>
+
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">About Looping</h1>
+            <p class="lead text-muted">Closing the circle of conscious consumption.</p>
+            <hr class="mx-auto" style="width: 60px; height: 4px; background-color: #0d6efd; border: none;">
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-lg p-4" style="border-radius: 20px;">
+                    <div class="card-body text-center text-md-start">
+                        <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3">
+                            <div class="bg-primary text-white rounded-circle p-3 me-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                    class="bi bi-info-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                    <path
+                                        d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                                </svg>
+                            </div>
+                            <h3 class="fw-bold m-0">Our Mission</h3>
+                        </div>
+                        <p class="text-secondary">
+                            <strong>Looping</strong> is a next-generation marketplace designed to give products a second
+                            life. We believe that every item has a story that shouldn't end with a single owner.
+                        </p>
+                        <p class="text-secondary">
+                            Our platform connects verified sellers with conscious buyers, creating a sustainable
+                            ecosystem where quality meets affordability.
+                        </p>
+                        <ul class="list-unstyled text-secondary mt-3">
+                            <li>✅ Verified Premium Sellers</li>
+                            <li>✅ Secure Payments via Stripe</li>
+                            <li>✅ Local & Global Community</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card h-100 border-0 shadow-lg p-4 bg-dark text-white text-center text-md-start"
+                    style="border-radius: 20px;">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-4">
+                            <div class="bg-info text-white rounded-circle p-3 me-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                    class="bi bi-envelope" viewBox="0 0 16 16">
+                                    <path
+                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
+                                </svg>
+                            </div>
+                            <h3 class="fw-bold m-0 text-info">Contact Us</h3>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="mb-1 fw-bold text-info">Customer Support</p>
+                            <p class="m-0 small">support@looping-market.com</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="mb-1 fw-bold text-info">Headquarters</p>
+                            <p class="m-0 small">Innovation Hub, Loop Street 101<br>Madrid, Spain</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="mb-1 fw-bold text-info">Business Hours</p>
+                            <p class="m-0 small">Mon - Fri: 9:00 AM - 6:00 PM</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn btn-info w-100 fw-bold py-2 shadow-sm text-white">Send Message</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
