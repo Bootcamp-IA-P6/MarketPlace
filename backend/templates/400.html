@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>400 - Bad Request | Looping MarketPlace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .error-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        
+        .logo {
+            margin-bottom: 2rem;
+        }
+        
+        .logo img {
+            height: 80px;
+            width: auto;
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: 300;
+            color: #000;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            color: #000;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+        
+        .error-message {
+            color: #666;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: 2px solid #000;
+            background-color: transparent;
+            color: #000;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background-color: #000;
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .divider {
+            width: 100px;
+            height: 1px;
+            background-color: #ddd;
+            margin: 2rem auto;
+        }
+        
+        @media (max-width: 480px) {
+            .error-container {
+                padding: 1rem;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIzNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VERDI3IiBzdHJva2Utd2lkdGg9IjQiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjE1IiBmaWxsPSIjNTBDOEZGIi8+CjxwYXRoIGQ9Ik0xNSAxNWg1djVoLTV2LTV6bTAgN2g1djNoLTV2LTN6IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPHN2ZyB4PSI5MCIgeT0iMTAiPgo8dGV4dCB4PSIwIiB5PSIyNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI4IiBmb250LXdlaWdodD0iMzAwIiBmaWxsPSIjN0VERDI3Ij5Mb29waW5nPC90ZXh0Pgo8dGV4dCB4PSIwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjY2Ij5NYXJRZXRQBGFQZS90ZXh0Pgo8L3N2Zz4KPC9zdmc+" alt="Looping MarketPlace">
+        </div>
+        
+        <div class="error-code">400</div>
+        <h1 class="error-title">Bad Request</h1>
+        
+        <div class="divider"></div>
+        
+        <p class="error-message">
+            The data sent is invalid or incomplete. 
+            Please check the information and try again.
+        </p>
+        
+        <div class="btn-container">
+            <a href="/" class="btn">
+                Go Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>
