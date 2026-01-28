@@ -18,5 +18,3 @@ stripe
 supabase
 supabase-auth
 django-environ
-bootstrap
-npm
