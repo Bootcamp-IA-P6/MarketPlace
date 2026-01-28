@@ -26,9 +26,26 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: backend/Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           tags: |
             iruperth/looping:latest
             iruperth/looping:${{ github.sha }}
+
+  deploy-test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull image from Docker Hub
+        run: docker pull iruperth/looping:latest
+
+      - name: Run container for testing
+        run: docker run -d -p 8000:8000 iruperth/looping:latest
+
+      - name: Wait for container to start
+        run: sleep 5
+
+      - name: Test container is running
+        run: docker ps
