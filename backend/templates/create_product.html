@@ -4,39 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <title>Sell New Product</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <h1>Create a New Product</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="name">Product Name:</label><br>
-        <input type="text" name="name" id="name" required><br><br>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom" style="height: 60px;">
+        <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
+                <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                    style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
+            <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
+                    class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
+                    </svg> </a> <a href="{% url 'shopping_cart' %}" class="btn btn-outline-info p-2" aria-label="Cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                        stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M6 6h15l-2 9H7L6 6z" />
+                        <circle cx="9" cy="20" r="1.5" />
+                        <circle cx="18" cy="20" r="1.5" />
+                    </svg> </a> <a href="{% url 'user_profile' %}" class="btn btn-info">My Profile</a>
+                <form action="{% url 'logout' %}" method="post" class="d-inline"> {% csrf_token %} <button type="submit"
+                        class="btn btn-info">Log Out</button> </form> {% else %} <a
+                    href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-info p-2"
+                    aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                        stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
+                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                    class="btn btn-outline-info p-2" aria-label="Cart"> <svg xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path d="M6 6h15l-2 9H7L6 6z" />
+                        <circle cx="9" cy="20" r="1.5" />
+                        <circle cx="18" cy="20" r="1.5" />
+                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                    class="btn btn-info">Log In</a> {% endif %}
+            </div>
+        </div>
+    </nav>
 
-        <!-- <label for="quantity">Quantity:</label><br>
-        <input type="number" name="quantity" id="quantity" required><br><br> -->
-        <label for="location">Location:</label><br>
-        <select name="location" id="location" required>
-            {% for location in locations %}
-            <option value="{{ location.id }}">{{ location.city_name }}, {{ location.country_name }}</option>
-            {% endfor %}
-        </select><br><br>
+    <div class="container d-flex justify-content-center mt-5">
 
-        <label for="price">Price (€):</label><br>
-        <input type="number" name="price" id="price" step="0.01" required><br><br>
+        <div class="card shadow p-4" style="max-width: 300px; width: 100%;">
 
-        <label for="description">Description:</label><br>
-        <textarea name="description" id="description" required></textarea><br><br>
+            <h2 class="text-center mb-4 fw-bold" style="font-size: 1.3rem;">Create a New Product</h2>
 
-        <label for="image">Image:</label><br>
-        <input type="file" name="image" id="image" required><br><br>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
 
-        <button type="submit">Publish Product</button>
-    </form>
-    <br>
-    <form action="{% url 'main_page' %}" method="post">
-        <button type="submit">Cancel and go back</button>
-    </form>
+                <div class="mb-2">
+                    <label for="name" class="form-label">Product Name</label>
+                    <input type="text" name="name" id="name" class="form-control form-control-sm" required>
+                </div>
+
+                <div class="mb-2">
+                    <label for="location" class="form-label">Location</label>
+                    <select name="location" id="location" class="form-select form-select-sm" required>
+                        {% for location in locations %}
+                        <option value="{{ location.id }}">{{ location.city_name }}, {{ location.country_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-2">
+                    <label for="price" class="form-label">Price (€)</label>
+                    <input type="number" name="price" id="price" step="0.01" class="form-control form-control-sm"
+                        required>
+                </div>
+
+                <div class="mb-2">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-control form-control-sm" rows="3"
+                        required></textarea>
+                </div>
+
+                <div class="mb-2">
+                    <label for="image" class="form-label">Product Image</label>
+                    <input type="file" name="image" id="image" class="form-control form-control-sm" required>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 btn-sm mt-2">Publish Product</button>
+            </form>
+
+            <a href="{% url 'main_page' %}" class="btn btn-secondary w-100 btn-sm mt-3">
+                Cancel and go back
+            </a>
+
+        </div>
+
+    </div>
+
 </body>
 
 </html>

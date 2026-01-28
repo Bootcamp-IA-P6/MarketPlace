@@ -9,96 +9,148 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="bg-light">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <nav class="navbar navbar-expand-lg bg-white border-bottom">
-        <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
-                <img src="{% static 'images/loopingWlogo1.png' %}" alt="Looping" height="40"> </a>
-            <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
-                    class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
-                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
-                    </svg> </a> <a href="{% url 'shopping_cart' %}" class="btn btn-outline-info p-2" aria-label="Cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
-                        stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M6 6h15l-2 9H7L6 6z" />
-                        <circle cx="9" cy="20" r="1.5" />
-                        <circle cx="18" cy="20" r="1.5" />
-                    </svg> </a> <a href="{% url 'user_profile' %}" class="btn btn-info">My Profile</a>
-                <form action="{% url 'logout' %}" method="post" class="d-inline"> {% csrf_token %} <button type="submit"
-                        class="btn btn-info">Log Out</button> </form> {% else %} <a
-                    href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-info p-2"
-                    aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                        stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
-                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
-                    class="btn btn-outline-info p-2" aria-label="Cart"> <svg xmlns="http://www.w3.org/2000/svg"
-                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M6 6h15l-2 9H7L6 6z" />
-                        <circle cx="9" cy="20" r="1.5" />
-                        <circle cx="18" cy="20" r="1.5" />
-                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
-                    class="btn btn-info">Log In</a> {% endif %}
+    <nav class="navbar navbar-expand-lg bg-white border-bottom" style="height: 60px;">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
+                <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                    style="height: 80px; object-fit: contain; margin-left: -20px;">
+            </a>
+
+            <div class="d-flex align-items-center gap-3">
+                {% if user.is_authenticated %}
+                <a href="{% url 'favorites' %}" class="btn btn-outline-info p-2">❤️</a>
+                <a href="{% url 'shopping_cart' %}" class="btn btn-outline-info p-2">🛒</a>
+                <a href="{% url 'user_profile' %}" class="btn btn-info">My Profile</a>
+
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-info">Log Out</button>
+                </form>
+
+                {% else %}
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                    class="btn btn-outline-info p-2">❤️</a>
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                    class="btn btn-outline-info p-2">🛒</a>
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-info">Log In</a>
+                {% endif %}
             </div>
         </div>
     </nav>
-    <h2>My Profile: {{ user.username }}</h2>
-    {% if profile.is_premium %}
-    <span style="background: gold; padding: 5px;">Premium Seller</span>
-    <br><br>
-    <a href="{% url 'create_product' %}" class="btn btn-success">Sell new product</a>
-    {% else %}
-    <a href="{% url 'create_product' %}" class="btn btn-warning">Sell new product</a>
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>
-        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-        document.getElementById("upgrade-btn").onclick = function () {
-            fetch("/create-upgrade-session/")
-                .then(res => res.json())
-                .then(data => stripe.redirectToCheckout({ sessionId: data.id }));
-        }; 
-    </script>
-    {% endif %}
 
-    <hr>
-    <h3>My Purchases</h3>
-    {% for p in purchased_products %}
-    <p>{{ p.name }} - {{ p.price }}€</p>
-    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
-    {% empty %}
-    <p>No purchases yet.</p>
-    {% endfor %}
+    <div class="container text-center mt-4">
 
-    <hr>
-    <h3>My Sales</h3>
-    {% for p in selling_products %}
-    <button onclick="confirmDelete('{{ p.id }}')"
-        style="background-color: red; color: white; border: none; padding: 6px 12px; cursor: pointer;">
-        Delete product
-    </button>
-    <p>
-        {{ p.name }} - {{ p.price }}€
-        {% if p.is_sold %}
-        <span>(Sold)</span>
+        <h3 class="mb-3">{{ user.username }}</h3>
+
+        {% if profile.is_premium %}
+        <span class="badge bg-warning text-dark fs-6 mb-3">Premium Seller</span>
+        <br>
+        <a href="{% url 'create_product' %}" class="btn btn-success mt-2">Sell new product</a>
+
+        {% else %}
+        <button id="upgrade-btn" class="btn btn-warning mb-3">Upgrade to Premium Seller (19.99€)</button>
+
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+            const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+            document.getElementById("upgrade-btn").onclick = function () {
+                fetch("/create-upgrade-session/")
+                    .then(res => res.json())
+                    .then(data => stripe.redirectToCheckout({ sessionId: data.id }));
+            };
+        </script>
         {% endif %}
-    </p>
-    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
-    {% empty %}
-    <p>No products for sale.</p>
-    {% endfor %}
 
-    <hr>
-    <h3>My Sold Products</h3>
-    {% for p in sold_products %}
-    <p>{{ p.name }} - {{ p.price }}€</p>
-    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
-    {% empty %}
-    <p>No products sold yet.</p>
-    {% endfor %}
+        <hr class="my-4">
 
+        <h3 class="mb-3">My Purchases</h3>
+        <div class="row justify-content-center">
+            {% for p in purchased_products %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <div class="card text-center p-3" style="width:260px; height:420px;">
+                    <p class="fw-bold mb-2" style="min-height:40px;">{{ p.name }}</p>
+
+                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                        <img src="{{ p.image }}" alt="{{ p.name }}"
+                            style="max-width:100%; max-height:200px; object-fit:contain; border-radius:8px;">
+                    </div>
+
+                    <p class="fw-bold mt-3">{{ p.price }}€</p>
+
+                    <a href="{% url 'product_detail' p.id %}" class="btn btn-info btn-sm mt-auto">View Product</a>
+                </div>
+
+            </div>
+            {% empty %}
+            <p>No purchases yet.</p>
+            {% endfor %}
+        </div>
+
+        <hr class="my-4">
+
+        <h3 class="mb-3">My Sales</h3>
+        <div class="row justify-content-center">
+            {% for p in selling_products %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+
+                <div class="card text-center p-3" style="width:260px; height:420px;">
+                    <p class="fw-bold mb-2" style="min-height:40px;">{{ p.name }}</p>
+
+                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                        <img src="{{ p.image }}" alt="{{ p.name }}"
+                            style="max-width:100%; max-height:200px; object-fit:contain; border-radius:8px;">
+                    </div>
+
+                    <p class="fw-bold mt-3">{{ p.price }}€</p>
+
+                    {% if p.is_sold %}
+                    <span class="badge bg-secondary mb-2">Sold</span>
+                    {% endif %}
+
+                    <button onclick="confirmDelete('{{ p.id }}')" class="btn btn-danger btn-sm mt-auto">
+                        Delete product
+                    </button>
+                </div>
+
+            </div>
+            {% empty %}
+            <p>No products for sale.</p>
+            {% endfor %}
+        </div>
+
+        <hr class="my-4">
+
+        <!-- SOLD PRODUCTS -->
+        <h3 class="mb-3">My Sold Products</h3>
+        <div class="row justify-content-center">
+            {% for p in sold_products %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+
+                <div class="card text-center p-3" style="width:260px; height:420px;">
+                    <p class="fw-bold mb-2" style="min-height:40px;">{{ p.name }}</p>
+
+                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                        <img src="{{ p.image }}" alt="{{ p.name }}"
+                            style="max-width:100%; max-height:200px; object-fit:contain; border-radius:8px;">
+                    </div>
+
+                    <p class="fw-bold mt-3">{{ p.price }}€</p>
+
+                    <a href="{% url 'product_detail' p.id %}" class="btn btn-info btn-sm mt-auto">View Product</a>
+                </div>
+
+            </div>
+            {% empty %}
+            <p>No products sold yet.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+
     <script>
         function confirmDelete(productId) {
             Swal.fire({
@@ -118,5 +170,6 @@
         }
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+</html>

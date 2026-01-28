@@ -1,32 +1,80 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+{% load static %}
+<nav class="navbar bg-white border-bottom" style="height: 60px;">
+    <div class="container d-flex justify-content-center">
+        <a class="navbar-brand mx-auto" href="{% url 'main_page' %}">
+            <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                style="height: 80px; object-fit: contain; margin-top: -24px;">
+        </a>
+    </div>
+</nav>
 
-<body>
-    <h1>Login</h1>
 
-    {% if form.errors %}
-    <p style="color: red;">Invalid username or password.</p>
-    {% endif %}
 
-    <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        <label for="id_username">Username:</label>
-        <input type="text" name="username" id="id_username" required><br><br>
+<body class="bg-light">
 
-        <label for="id_password">Password:</label>
-        <input type="password" name="password" id="id_password" required><br><br>
+    <div class="container vh-100 d-flex align-items-center justify-content-center">
+        <div class="col-12 col-sm-8 col-md-5 col-lg-4">
 
-        <button type="submit">Login</button>
-        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
 
-    </form>
-    <br>
-    <a href="{% url 'main_page' %}">Back to Shop</a>
+                    <h3 class="text-center mb-4">Login</h3>
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger text-center">
+                        Invalid username or password.
+                    </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            <input type="text" name="username" id="id_username" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Password</label>
+                            <input type="password" name="password" id="id_password" class="form-control" required>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                Login
+                            </button>
+                        </div>
+
+                        <p class="text-center mb-2">
+                            Don't have an account?
+                            <a href="{% url 'register' %}">Register here</a>
+                        </p>
+
+                        <p class="text-center mb-0">
+                            <a href="{% url 'main_page' %}" class="text-muted">
+                                ← Back to shop
+                            </a>
+                        </p>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

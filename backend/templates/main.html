@@ -15,9 +15,10 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom" style="height: 60px;">
         <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
-                <img src="{% static 'images/loopingWlogo1.png' %}" alt="Looping" height="40"> </a>
+                <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                    style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
             <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
                     class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
                         width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -49,71 +50,174 @@
 
     <hr>
 
-    <ul>
-        {% for product in products %}
-        <li>
-            <a href="{% url 'product_detail' product.id %}">
-                <strong>{{ product.name }}</strong>
-            </a>
-            - {{ product.price }}€
+    <div id="products-container" class="container my-5">
 
-            {% if user.is_authenticated and product.seller.user != user %}
-            <button type="button" id="fav-btn-{{ product.id }}" onclick="handleFavorite('{{ product.id }}')"
-                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+        <img src="{% static 'images/logo3.png' %}" alt="Looping"
+            style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
+        {% if products %}
+        <div class="d-flex flex-column gap-3" id="products-list">
+            {% for product in products %}
+            <div class="card shadow-sm border-light product-card" style="display: none;">
+                <div class="card-body p-3">
+                    <div class="row align-items-center">
 
-                {% if product in user.profile.favorites.all %}
-                Remove from Favorites ❤️
-                {% else %}
-                Add to Favorites 🤍
-                {% endif %}
+                        <div class="col-12 col-md-3 text-center mb-3 mb-md-0">
+                            <a href="{% url 'product_detail' product.id %}">
+                                <img src="{{ product.image }}" alt="{{ product.name }}" class="img-fluid"
+                                    style="max-height: 180px; object-fit: contain;">
+                            </a>
+                        </div>
 
-            </button>
-            {% endif %}
+                        <div class="col-12 col-md-6 border-start-md ps-md-4">
+                            <h5 class="fw-bold mb-1">
+                                <a href="{% url 'product_detail' product.id %}"
+                                    class="text-decoration-none text-primary">
+                                    {{ product.name }}
+                                </a>
+                            </h5>
+                            <p class="text-muted small mb-2">
+                                Seller: <strong>{{ product.seller.user.username }}</strong>
+                                <span class="mx-2">|</span>
+                                {{ product.location.city_name }}
+                            </p>
+                            <p class="text-secondary small mb-3">
+                                {{ product.description|truncatechars:150 }}
+                                <a href="{% url 'product_detail' product.id %}"
+                                    class="text-decoration-none text-dark">Read more</a>
+                            </p>
+                            <h3 class="fw-bold mb-0">{{ product.price }}€</h3>
+                        </div>
 
-            {% if user.is_authenticated and product.seller.user != user %}
-            <button type="button" id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
-                style="cursor:pointer; background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+                        <div class="col-12 col-md-3 mt-3 mt-md-0">
+                            <div class="d-grid gap-2">
+                                {% if user.is_authenticated and product.seller.user != user %}
+                                {% if product.is_available and not product.is_sold %}
+                                <a href="{% url 'product_detail' product.id %}"
+                                    class="btn btn-outline-info btn-sm py-2">
+                                    View Product
+                                </a>
+                                <button onclick="confirmPurchase('{{ product.id }}')"
+                                    class="btn btn-success btn-sm py-2">
+                                    Buy Now
+                                </button>
+                                <button id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
+                                    class="btn btn-primary btn-sm py-2">
+                                    {% if product.id in cart_products %} Remove from Cart 🛒❌ {% else %} Add to Cart 🛒
+                                    {% endif %}
+                                </button>
+                                <button id="fav-btn-{{ product.id }}" onclick="handleFavorite('{{ product.id }}')"
+                                    class="btn btn-danger btn-sm py-2">
+                                    {% if product in user.profile.favorites.all %} Remove Favorite ❤️ {% else %} Add
+                                    Favorite 🤍 {% endif %}
+                                </button>
+                                {% else %}
+                                <span class="badge bg-danger p-2">Sold Out</span>
+                                {% endif %}
+                                {% elif user.is_authenticated and product.seller.user == user %}
+                                <button onclick="confirmDelete('{{ product.id }}')"
+                                    class="btn btn-outline-danger btn-sm py-2">
+                                    Delete my product
+                                </button>
+                                {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-info btn-sm py-2 text-white">Login to buy</a>
+                                {% endif %}
+                            </div>
+                        </div>
 
-                {% if product.id in cart_products %} Remove from Cart 🛒❌ {% else %} Add to Cart 🛒 {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
 
-            </button>
-            {% endif %}
+        <div class="text-center mt-4">
+            <button id="load-more-btn" class="btn btn-primary">See More</button>
+        </div>
+
+        {% else %}
+        <div class="alert alert-light text-center border">No products available.</div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll(".product-card");
+            const loadMoreBtn = document.getElementById("load-more-btn");
+            let visibleCount = 8;
+
+            function showCards(count) {
+                for (let i = 0; i < count && i < cards.length; i++) {
+                    cards[i].style.display = "flex";
+                }
+            }
+
+            showCards(visibleCount);
+
+            loadMoreBtn.addEventListener("click", () => {
+                const newVisibleCount = visibleCount + 4;
+                for (let i = visibleCount; i < newVisibleCount && i < cards.length; i++) {
+                    cards[i].style.display = "flex";
+                }
+                visibleCount = newVisibleCount;
+
+                if (visibleCount >= cards.length) {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.innerText = "No more products";
+                }
+            });
+
+            if (cards.length <= visibleCount) {
+                loadMoreBtn.style.display = "none";
+            }
+        });
+    </script>
+
+
+    <style>
+        .uniform-btn {
+            height: 40px;
+            min-width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+    </style>
 
 
 
-            <p>{{ product.description }}</p>
-            <p><small>Seller: {{ product.seller.user.username }}</small></p>
-            <p><small>Location: {{ product.location.city_name }}, {{ product.location.country_name }}</small></p>
 
-            {% if user.is_authenticated %}
-            {% if product.seller.user != user %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll(".product-card");
+            const loadMoreBtn = document.getElementById("load-more-btn");
+            let visibleCount = 8;
 
-            <button onclick="confirmPurchase('{{ product.id }}')"
-                style="background-color: green; color: white; border: none; padding: 6px 12px; cursor: pointer;">
-                Buy
-            </button>
+            function showCards(count) {
+                for (let i = 0; i < count && i < cards.length; i++) {
+                    cards[i].style.display = "flex";
+                }
+            }
 
-            {% else %}
+            showCards(visibleCount);
 
-            <button onclick="confirmDelete('{{ product.id }}')"
-                style="background-color: red; color: white; border: none; padding: 6px 12px; cursor: pointer;">
-                Delete product
-            </button>
+            loadMoreBtn.addEventListener("click", () => {
+                let newVisibleCount = visibleCount + 4;
+                for (let i = visibleCount; i < newVisibleCount && i < cards.length; i++) {
+                    cards[i].style.display = "flex";
+                }
+                visibleCount = newVisibleCount;
 
-            {% endif %}
-            {% else %}
-            <a href="{% url 'login' %}">
-                <button type="button">Login to buy</button>
-            </a>
-            {% endif %}
+                if (visibleCount >= cards.length) {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.innerText = "No hay más productos";
+                }
+            });
 
-            <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 200px; height: auto;">
-        </li>
-        <hr>
-        {% empty %}
-        <li>No products available.</li>
-        {% endfor %}
-    </ul>
+            if (cards.length <= visibleCount) {
+                loadMoreBtn.style.display = "none";
+            }
+        });
+    </script>
+
 
     <script src="https://js.stripe.com/v3/"></script>
     <script>

@@ -12,9 +12,10 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom" style="height: 60px;">
         <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
-                <img src="{% static 'images/loopingWlogo1.png' %}" alt="Looping" height="40"> </a>
+                <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                    style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
             <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
                     class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
                         width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -45,56 +46,68 @@
     </nav>
 
 
-    <h1>Product Detail</h1>
-
-    <div>
-        <h2>{{ product.name }}</h2>
-        <p>{{ product.description }}</p>
-        <p><strong>Location:</strong> {{ product.location.city_name }}, {{ product.location.country_name }}</p>
-        <p><strong>Price:</strong> {{ product.price }}€</p>
-        <p><strong>Quantity:</strong> {{ product.quantity }}</p>
-        <p><strong>Seller:</strong> {{ product.seller.user.username }}</p>
-
-        <img src="{{ product.image }}" alt="Product Image" style="max-width: 300px; height: auto; border-radius: 8px;">
+    <div class="container mt-3"> <a href="javascript:history.back()" class="btn btn-outline-secondary mb-3"> ← Back </a>
     </div>
+    <div class="container mt-4 mb-5 pb-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
 
-    <br>
+                <div class="card text-center p-3" style="width: 100%; min-height: 480px;">
 
-    {% if user.is_authenticated %}
-    {% if product.seller.user != user %}
-    {% if product.is_available and not product.is_sold %}
-    <button onclick="confirmPurchase('{{ product.id }}')"
-        style="background-color: green; color: white; border: none; padding: 8px 16px; cursor: pointer;">
-        Buy
-    </button>
+                    <p class="fw-bold mb-2" style="min-height: 40px; font-size: 1.2rem;">
+                        {{ product.name }}
+                    </p>
 
-    <button id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
-        style="background-color: green; color: white; border: none; padding: 8px 16px; cursor: pointer;">
-        {% if product.id in cart_products %}
-        Remove from Cart 🛒❌
-        {% else %}
-        Add to Cart 🛒
-        {% endif %}
-    </button>
-    {% else %}
-    <p style="color: red; font-weight: bold; margin-top: 10px;">
-        This product is no longer available.
-    </p>
-    {% endif %}
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center mb-3">
+                        <img src="{{ product.image }}" alt="{{ product.name }}"
+                            style="max-width: 100%; max-height: 240px; object-fit: contain; border-radius: 8px;">
+                    </div>
 
-    {% else %}
-    <button onclick="confirmDelete('{{ product.id }}')"
-        style="background-color: red; color: white; border: none; padding: 8px 16px; cursor: pointer;">
-        Delete product
-    </button>
-    {% endif %}
+                    <div class="text-start px-2">
+                        <p><strong>Description:</strong> {{ product.description }}</p>
+                        <p><strong>Location:</strong> {{ product.location.city_name }},
+                            {{ product.location.country_name }}</p>
+                        <p><strong>Price:</strong> {{ product.price }}€</p>
+                        <p><strong>Quantity:</strong> {{ product.quantity }}</p>
+                        <p><strong>Seller:</strong> {{ product.seller.user.username }}</p>
+                    </div>
 
-    {% else %}
-    <a href="{% url 'login' %}">
-        <button type="button">Login to buy</button>
-    </a>
-    {% endif %}
+                    <div class="mt-3 d-flex flex-column gap-2">
 
+                        {% if user.is_authenticated %}
+                        {% if product.seller.user != user %}
+                        {% if product.is_available and not product.is_sold %}
+                        <button onclick="confirmPurchase('{{ product.id }}')" class="btn btn-success btn-sm">
+                            Buy 🛒
+                        </button>
+
+                        <button id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
+                            class="btn btn-primary btn-sm">
+                            {% if product.id in cart_products %}
+                            Remove from Cart ❌
+                            {% else %}
+                            Add to Cart 🛒
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <p class="text-danger fw-bold mt-2">This product is no longer available.</p>
+                        {% endif %}
+                        {% else %}
+                        <button onclick="confirmDelete('{{ product.id }}')" class="btn btn-danger btn-sm">
+                            Delete product
+                        </button>
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-info btn-sm">Login to buy</a>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <script>
         const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");

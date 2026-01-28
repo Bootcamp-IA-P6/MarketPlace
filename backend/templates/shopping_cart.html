@@ -13,9 +13,10 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom" style="height: 60px;">
         <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
-                <img src="{% static 'images/loopingWlogo1.png' %}" alt="Looping" height="40"> </a>
+                <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                    style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
             <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
                     class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
                         width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -44,43 +45,69 @@
             </div>
         </div>
     </nav>
-
-    <h1>Shopping Cart</h1>
-
-    <div id="shopping-cart-container">
-        {% for item in shopping_cart_products %}
-        <div id="product-card-{{ item.product.id }}"
-            style="border-bottom: 1px solid #ccc; padding: 15px; margin-bottom: 10px;">
-
-            <input type="checkbox" class="product-select" value="{{ item.product.id }}" onclick="updateTotal()">
-
-            <p><strong>{{ item.product.name }}</strong></p>
-
-            <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
-                style="width: 200px; height: auto; display: block; margin-bottom: 10px; border-radius: 8px;">
-
-            <p>{{ item.product.description }}</p>
-            <p><strong>Location:</strong> {{ item.product.location.city_name }}</p>
-            <p><strong>Price:</strong> {{ item.product.price }}€</p>
-
-            <a href="{% url 'product_detail' item.product.id %}">View Product</a>
-
-            <button type="button" onclick="confirmRemove('{{ item.product.id }}')"
-                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
-                Remove from Shopping Cart ❤️
-            </button>
-        </div>
-        {% empty %}
-        <p>You have no Shopping Cart yet.</p>
-        {% endfor %}
-    </div>
-
-    <h2>Total: <span id="total-price">0</span> €</h2>
-
+    <h3 class="mt-4">Total: <span id="total-price">0</span> €</h3>
     <button id="buy-selected-btn" onclick="buySelected()"
         style="background-color: green; color: white; padding: 12px 25px; border: none; cursor: pointer; font-size: 16px; border-radius: 6px; margin-top: 15px;">
         Buy Selected Products 🛒
     </button>
+
+
+    <div id="shopping-cart-container" class="container my-5">
+        <h1 class="text-center mb-4">Shopping Cart</h1>
+
+        {% if shopping_cart_products %}
+        <div class="row justify-content-center g-3">
+            {% for item in shopping_cart_products %}
+            <div class="col-12 col-sm-6 col-md-3 d-flex">
+                <div class="card d-flex flex-column text-center" style="width: 100%; min-height: 420px; padding: 15px;">
+                    <input type="checkbox" class="product-select" value="{{ item.product.id }}"
+                        data-price="{{ item.product.price }}" onclick="updateTotal()">
+
+                    <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none text-dark">
+                        <p class="fw-bold mb-2" style="min-height: 40px;">{{ item.product.name }}</p>
+                    </a>
+
+                    <a href="{% url 'product_detail' item.product.id %}">
+                        <div class="flex-grow-1 d-flex align-items-center justify-content-center mb-2">
+                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                                style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px;">
+                        </div>
+                    </a>
+
+                    <p class="mb-1" style="height: 50px; overflow: hidden; text-overflow: ellipsis;">
+                        {{ item.product.description|truncatechars:50 }}
+                    </p>
+
+                    <p><small>Location: {{ item.product.location.city_name }}</small></p>
+                    <p class="fw-bold">{{ item.product.price }}€</p>
+
+                    <div class="mt-auto d-flex flex-column gap-2">
+                        <a href="{% url 'product_detail' item.product.id %}" class="btn btn-info btn-sm uniform-btn">
+                            View Product
+                        </a>
+                        <button type="button" onclick="confirmRemove('{{ item.product.id }}')"
+                            class="btn btn-danger btn-sm uniform-btn">
+                            Remove from Cart ❤️
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center">You have no Shopping Cart yet.</p>
+        {% endif %}
+    </div>
+
+
+    <style>
+        .uniform-btn {
+            height: 40px;
+            min-width: 100%;
+            max-width: 100%;
+        }
+    </style>
+
 
     <script>
         function getCookie(name) {
@@ -182,6 +209,18 @@
                         });
                 }
             });
+        }
+    </script>
+
+    <script>
+        function updateTotal() {
+            let total = 0;
+
+            document.querySelectorAll(".product-select:checked").forEach(cb => {
+                total += parseFloat(cb.dataset.price);
+            });
+
+            document.getElementById("total-price").textContent = total.toFixed(2);
         }
     </script>
 
