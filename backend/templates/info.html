@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Info | Looping</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <div class="container my-5">
+
+        <div class="mb-4 text-start">
+            <a href="{% url 'main_page' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                    class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                </svg>
+                Back to Main Page
+            </a>
+        </div>
+
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">Information Center</h1>
+            <p class="lead text-muted">Everything you need to know about buying and selling on Looping.</p>
+            <hr class="mx-auto" style="width: 60px; height: 4px; background-color: #0d6efd; border: none;">
+        </div>
+
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-md-10 col-lg-8">
+                <div class="card border-0 shadow-lg p-4" style="border-radius: 20px;">
+                    <div class="card-body">
+                        <h3 class="fw-bold mb-4 text-center">Frequently Asked Questions</h3>
+
+                        <div class="accordion accordion-flush" id="infoAccordion">
+
+                            <div class="accordion-item border-bottom py-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold text-dark bg-white" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        How does the "Looping" system work?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#infoAccordion">
+                                    <div class="accordion-body text-secondary">
+                                        Looping connects local sellers with buyers interested in pre-owned products.
+                                        Once a purchase is made via Stripe, the product is marked as "Sold" and the
+                                        buyer can coordinate with the seller for delivery or pickup.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item border-bottom py-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold text-dark bg-white" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        Is it safe to buy here?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#infoAccordion">
+                                    <div class="accordion-body text-secondary">
+                                        Absolutely. We use <strong>Stripe</strong> for all transactions, which means
+                                        your bank details never touch our servers. Also, our "Premium Seller" badge
+                                        identifies trusted members of the community.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item border-bottom py-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold text-dark bg-white" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        How can I become a Premium Seller?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#infoAccordion">
+                                    <div class="accordion-body text-secondary">
+                                        You can upgrade your account in your profile section. The Premium status allows
+                                        you to post unlimited products and gives you a special badge that increases
+                                        buyer trust.
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="mt-5 p-4 bg-light rounded-4 text-center">
+                            <h5 class="fw-bold">Still have questions?</h5>
+                            <p class="text-muted small">If you couldn't find what you were looking for, our support team
+                                is ready to help you.</p>
+                            <a href="{% url 'contact' %}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                                Go to Contact Us
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

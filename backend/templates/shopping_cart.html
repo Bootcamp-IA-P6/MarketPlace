@@ -1,59 +1,130 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Shopping Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Looping</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body>
+<body class="bg-light">
 
-    <form action="{% url 'logout' %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-
-    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
-    <a href="{% url 'user_profile' %}"><button type="button">My Profile</button></a>
-    <a href="{% url 'favorites' %}"><button type="button">My Favorites</button></a>
-
-    <h1>Shopping Cart</h1>
-
-    <div id="shopping-cart-container">
-        {% for item in shopping_cart_products %}
-        <div id="product-card-{{ item.product.id }}"
-            style="border-bottom: 1px solid #ccc; padding: 15px; margin-bottom: 10px;">
-
-            <input type="checkbox" class="product-select" value="{{ item.product.id }}" onclick="updateTotal()">
-
-            <p><strong>{{ item.product.name }}</strong></p>
-
-            <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
-                style="width: 200px; height: auto; display: block; margin-bottom: 10px; border-radius: 8px;">
-
-            <p>{{ item.product.description }}</p>
-            <p><strong>Location:</strong> {{ item.product.location.city_name }}</p>
-            <p><strong>Price:</strong> {{ item.product.price }}€</p>
-
-            <a href="{% url 'product_detail' item.product.id %}">View Product</a>
-
-            <button type="button" onclick="confirmRemove('{{ item.product.id }}')"
-                style="cursor:pointer; background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
-                Remove from Shopping Cart ❤️
-            </button>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm" style="height: 60px;">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
+                <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                    style="height: 80px; object-fit: contain; margin-left: -20px;">
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                {% if user.is_authenticated %}
+                <a href="{% url 'favorites' %}" class="btn btn-outline-info rounded-circle p-2 shadow-sm"
+                    style="width: 40px; height: 40px; line-height: 1;">❤️</a>
+                <a href="{% url 'shopping_cart' %}" class="btn btn-info rounded-circle p-2 shadow-sm text-white"
+                    style="width: 40px; height: 40px; line-height: 1;">🛒</a>
+                <a href="{% url 'user_profile' %}"
+                    class="btn btn-info rounded-pill px-3 fw-bold text-white shadow-sm">My Profile</a>
+                <form action="{% url 'logout' %}" method="post" class="d-inline m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary rounded-pill px-3 fw-bold shadow-sm">Log
+                        Out</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                    class="btn btn-info rounded-pill px-4 fw-bold text-white shadow-sm">Log In</a>
+                {% endif %}
+            </div>
         </div>
-        {% empty %}
-        <p>You have no Shopping Cart yet.</p>
-        {% endfor %}
+    </nav>
+
+    <div id="shopping-cart-container" class="container my-5">
+
+        <div class="mb-4">
+            <a href="{% url 'main_page' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                    class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                </svg>
+                Back to Shop
+            </a>
+        </div>
+
+        <div class="row mb-4 align-items-center bg-white p-4 rounded-4 shadow-sm mx-1">
+            <div class="col-md-6">
+                <h2 class="fw-bold m-0">My Shopping Cart</h2>
+                <p class="text-muted m-0">Select the products you want to checkout</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <h3 class="fw-bold text-primary mb-2">Total: <span id="total-price">0.00</span> €</h3>
+                <button id="buy-selected-btn" onclick="buySelected()"
+                    class="btn btn-success btn-lg rounded-pill px-5 fw-bold shadow">
+                    Checkout Selected 🛒
+                </button>
+            </div>
+        </div>
+
+        {% if shopping_cart_products %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in shopping_cart_products %}
+            <div class="col d-flex">
+                <div class="card border-0 shadow-sm p-3 text-center w-100 position-relative"
+                    style="border-radius: 20px;">
+
+                    <div class="position-absolute top-0 start-0 p-3">
+                        <input type="checkbox" class="product-select form-check-input border-primary shadow-sm"
+                            style="width: 25px; height: 25px; cursor: pointer;" value="{{ item.product.id }}"
+                            data-price="{{ item.product.price }}" onclick="updateTotal()">
+                    </div>
+
+                    <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none text-dark">
+                        <p class="fw-bold mb-2 text-truncate px-4" title="{{ item.product.name }}">
+                            {{ item.product.name }}
+                        </p>
+                    </a>
+
+                    <a href="{% url 'product_detail' item.product.id %}">
+                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3"
+                            style="height: 180px;">
+                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
+                                style="max-width: 90%; max-height: 160px; object-fit: contain;">
+                        </div>
+                    </a>
+
+                    <div class="mb-3 px-2">
+                        <p class="text-secondary small mb-1" style="height: 40px; overflow: hidden;">
+                            {{ item.product.description|truncatechars:60 }}
+                        </p>
+                        <p class="text-muted small mb-1">📍 {{ item.product.location.city_name }}</p>
+                        <p class="fw-bold text-primary fs-5 mb-0">{{ item.product.price }}€</p>
+                    </div>
+
+                    <div class="mt-auto d-grid gap-2">
+                        <a href="{% url 'product_detail' item.product.id %}"
+                            class="btn btn-outline-info btn-sm rounded-pill fw-bold">
+                            View Details
+                        </a>
+                        <button type="button" onclick="confirmRemove('{{ item.product.id }}')"
+                            class="btn btn-outline-secondary btn-sm rounded-pill fw-bold">
+                            Remove 🗑️
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="bg-white p-5 rounded-4 shadow-sm d-inline-block">
+                <p class="fs-4 text-muted mb-4">Your cart is currently empty.</p>
+                <a href="{% url 'main_page' %}" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold">Start
+                    Shopping</a>
+            </div>
+        </div>
+        {% endif %}
     </div>
-
-    <h2>Total: <span id="total-price">0</span> €</h2>
-
-    <button id="buy-selected-btn" onclick="buySelected()"
-        style="background-color: green; color: white; padding: 12px 25px; border: none; cursor: pointer; font-size: 16px; border-radius: 6px; margin-top: 15px;">
-        Buy Selected Products 🛒
-    </button>
 
     <script>
         function getCookie(name) {
@@ -71,15 +142,9 @@
 
         function updateTotal() {
             let total = 0;
-
             document.querySelectorAll(".product-select:checked").forEach(cb => {
-                const priceText = cb.closest("div").querySelector("p:nth-of-type(4)").innerText;
-                const price = parseFloat(
-                    priceText.replace("Price:", "").replace("€", "").trim()
-                );
-                total += price;
+                total += parseFloat(cb.dataset.price);
             });
-
             document.getElementById("total-price").innerText = total.toFixed(2);
         }
 
@@ -89,19 +154,25 @@
             ).map(cb => cb.value);
 
             if (selected.length === 0) {
-                Swal.fire("No products selected", "Select at least one product.", "info");
+                Swal.fire({
+                    title: "No products selected",
+                    text: "Please select at least one product to continue.",
+                    icon: "info",
+                    confirmButtonColor: "#3fc3ee",
+                    confirmButtonText: "Got it"
+                });
                 return;
             }
 
             Swal.fire({
                 title: "Confirm Purchase",
-                text: "Do you want to buy the selected products?",
+                text: `You have selected ${selected.length} item(s). Proceed to checkout?`,
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
-                cancelButtonColor: "#aaa",
-                confirmButtonText: "Yes, buy",
-                cancelButtonText: "Cancel"
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, checkout",
+                cancelButtonText: "Keep shopping"
             }).then(result => {
                 if (result.isConfirmed) {
                     fetch("/create-multi-checkout/", {
@@ -114,7 +185,9 @@
                     })
                         .then(res => res.json())
                         .then(data => {
-                            window.location.href = data.checkout_url;
+                            if (data.checkout_url) {
+                                window.location.href = data.checkout_url;
+                            }
                         });
                 }
             });
@@ -122,13 +195,13 @@
 
         function confirmRemove(productId) {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to remove this product from your Shopping Cart?",
+                title: 'Remove item?',
+                text: "Do you want to take this out of your Shopping Cart?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ff4d4d',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, remove it!',
+                confirmButtonText: 'Yes, remove',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -144,9 +217,8 @@
                             if (data.success) {
                                 Swal.fire({
                                     title: 'Removed!',
-                                    text: 'The product has been removed.',
                                     icon: 'success',
-                                    timer: 1000,
+                                    timer: 800,
                                     showConfirmButton: false
                                 }).then(() => {
                                     window.location.reload();
@@ -158,6 +230,8 @@
         }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'footer.html' %}
 </body>
 
 </html>

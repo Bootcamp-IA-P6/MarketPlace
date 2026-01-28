@@ -1,90 +1,159 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>My Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Looping</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 
-<body>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <h2>My Profile: {{ user.username }}</h2>
+<body class="bg-light">
 
-    <form action="{% url 'logout' %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-    <a href="{% url 'favorites' %}"><button type="button">Favorites</button></a>
-    <a href="{% url 'main_page' %}"><button type="button">Back to Shop</button></a>
-    <a href="{% url 'shopping_cart' %}"><button type="button">Shopping Cart</button></a>
-    <br><br>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm" style="height: 60px;">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
+                <img src="{% static 'images/logo3.png' %}" alt="Looping"
+                    style="height: 80px; object-fit: contain; margin-left: -20px;">
+            </a>
 
-    {% if profile.is_premium %}
-    <span style="background: gold; padding: 5px;">Premium Seller</span>
-    <br><br>
-    <a href="{% url 'create_product' %}"><button>Sell new product</button></a>
-    {% else %}
-    <button id="upgrade-btn">Upgrade to seller (30€)</button>
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>
-        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-        document.getElementById("upgrade-btn").onclick = function () {
-            fetch("/create-upgrade-session/")
-                .then(res => res.json())
-                .then(data => stripe.redirectToCheckout({ sessionId: data.id }));
-        }; 
-    </script>
-    {% endif %}
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'favorites' %}" class="btn btn-outline-info rounded-circle p-2 shadow-sm"
+                    style="width: 40px; height: 40px; line-height: 1;">❤️</a>
+                <a href="{% url 'shopping_cart' %}" class="btn btn-outline-info rounded-circle p-2 shadow-sm"
+                    style="width: 40px; height: 40px; line-height: 1;">🛒</a>
+                <form action="{% url 'logout' %}" method="post" class="d-inline ms-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary rounded-pill px-3 fw-bold shadow-sm">Log
+                        Out</button>
+                </form>
+            </div>
+        </div>
+    </nav>
 
-    <hr>
-    <h3>My Purchases</h3>
-    {% for p in purchased_products %}
-    <p>{{ p.name }} - {{ p.price }}€</p>
-    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
-    {% empty %}
-    <p>No purchases yet.</p>
-    {% endfor %}
+    <div class="container mt-5">
+        <div class="mb-4 text-start">
+            <a href="{% url 'main_page' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                    class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                </svg>
+                Back to Main Page
+            </a>
+        </div>
 
-    <hr>
-    <h3>My Sales</h3>
-    {% for p in selling_products %}
-    <button onclick="confirmDelete('{{ p.id }}')"
-        style="background-color: red; color: white; border: none; padding: 6px 12px; cursor: pointer;">
-        Delete product
-    </button>
-    <p>
-        {{ p.name }} - {{ p.price }}€
-        {% if p.is_sold %}
-        <span>(Sold)</span>
-        {% endif %}
-    </p>
-    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
-    {% empty %}
-    <p>No products for sale.</p>
-    {% endfor %}
+        <div class="text-center mb-5">
+            <div class="bg-white d-inline-block p-4 rounded-circle shadow-sm mb-3">
+                <h1 class="display-6 fw-bold text-primary m-0">{{ user.username }}</h1>
+            </div>
+            <br>
+            {% if profile.is_premium %}
+            <span class="badge rounded-pill bg-warning text-dark px-3 py-2 fs-6 shadow-sm">✨ Premium Seller</span>
+            <div class="mt-4">
+                <a href="{% url 'create_product' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow">Sell New
+                    Product</a>
+            </div>
+            {% else %}
+            <button id="upgrade-btn" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm mt-2">
+                Upgrade to Premium Seller (19.99€)
+            </button>
+            <script>
+                const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+                document.getElementById("upgrade-btn").onclick = function () {
+                    fetch("/create-upgrade-session/")
+                        .then(res => res.json())
+                        .then(data => stripe.redirectToCheckout({ sessionId: data.id }));
+                };
+            </script>
+            {% endif %}
+        </div>
 
-    <hr>
-    <h3>My Sold Products</h3>
-    {% for p in sold_products %}
-    <p>{{ p.name }} - {{ p.price }}€</p>
-    <img src="{{ p.image }}" alt="{{ p.name }}" width="150">
-    {% empty %}
-    <p>No products sold yet.</p>
-    {% endfor %}
+        <h3 class="fw-bold mb-4 text-dark border-start border-primary border-4 ps-3">My Purchases</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+            {% for p in purchased_products %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center" style="border-radius: 20px;">
+                    <p class="fw-bold text-truncate mb-2">{{ p.name }}</p>
+                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3"
+                        style="height: 180px;">
+                        <img src="{{ p.image }}" alt="{{ p.name }}"
+                            style="max-width: 90%; max-height: 160px; object-fit: contain;">
+                    </div>
+                    <p class="fw-bold text-primary fs-5 mb-3">{{ p.price }}€</p>
+                    <a href="{% url 'product_detail' p.id %}"
+                        class="btn btn-outline-info rounded-pill fw-bold shadow-sm mt-auto">View Product</a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted ps-3">No purchases yet.</p>
+            {% endfor %}
+        </div>
 
+        <h3 class="fw-bold mb-4 text-dark border-start border-info border-4 ps-3">My Items for Sale</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+            {% for p in selling_products %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center" style="border-radius: 20px;">
+                    <p class="fw-bold text-truncate mb-2">{{ p.name }}</p>
+                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3"
+                        style="height: 180px;">
+                        <img src="{{ p.image }}" alt="{{ p.name }}"
+                            style="max-width: 90%; max-height: 160px; object-fit: contain;">
+                    </div>
+                    <p class="fw-bold text-primary fs-5 mb-2">{{ p.price }}€</p>
+                    {% if p.is_sold %}
+                    <span class="badge rounded-pill bg-secondary mb-3 shadow-sm w-50 mx-auto">Sold Out</span>
+                    {% endif %}
+                    <button onclick="confirmDelete('{{ p.id }}')"
+                        class="btn btn-outline-secondary rounded-pill fw-bold shadow-sm mt-auto">
+                        Delete Listing
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted ps-3">No products for sale.</p>
+            {% endfor %}
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <h3 class="fw-bold mb-4 text-dark border-start border-secondary border-4 ps-3">Sales History</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+            {% for p in sold_products %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center opacity-75" style="border-radius: 20px;">
+                    <p class="fw-bold text-truncate mb-2">{{ p.name }}</p>
+                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3"
+                        style="height: 180px;">
+                        <img src="{{ p.image }}" alt="{{ p.name }}"
+                            style="max-width: 90%; max-height: 160px; object-fit: contain;">
+                    </div>
+                    <p class="fw-bold text-primary fs-5 mb-3">{{ p.price }}€</p>
+                    <a href="{% url 'product_detail' p.id %}"
+                        class="btn btn-outline-secondary rounded-pill fw-bold shadow-sm mt-auto">Order Details</a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted ps-3">No products sold yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
     <script>
         function confirmDelete(productId) {
             Swal.fire({
                 title: 'Looping',
-                text: 'Are you sure you want to delete this product?',
+                text: 'Do you want to delete this listing?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, delete',
-                cancelButtonText: 'Cancel'
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-info rounded-pill fw-bold px-4 text-white mx-2 shadow-sm',
+                    cancelButton: 'btn btn-outline-secondary rounded-pill fw-bold px-4 mx-2 shadow-sm'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = `/product/delete/${productId}/`;
@@ -93,4 +162,8 @@
         }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'footer.html' %}
 </body>
+
+</html>

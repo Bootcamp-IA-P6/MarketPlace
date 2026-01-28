@@ -1,4 +1,4 @@
-django>=5.2,<5.3
+django
 psycopg2-binary
 bcrypt
 cffi
@@ -17,4 +17,4 @@ python-dotenv
 stripe
 supabase
 supabase-auth
-stripe
+django-environ

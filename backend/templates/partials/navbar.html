@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'main_page' %}">
+            <img src="{% static 'images/logo3.png' %}" alt="Looping" height="40">
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'main_page' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'favorites' %}">Favorites</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'shopping_cart' %}">Cart</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+                {% if user.is_authenticated %}
+                <a href="{% url 'user_profile' %}" class="btn btn-info">My Profile</a>
+
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-info">Log Out</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-info">Log
+                    In</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
