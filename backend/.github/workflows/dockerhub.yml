@@ -29,4 +29,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: iruperth/looping:1.0.3
+          tags: |
+            iruperth/looping:latest
+            iruperth/looping:${{ github.sha }}
