@@ -1,110 +1,115 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <meta charset="UTF-8">
-    <title>Looping - Product Detail</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} | Looping</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    {% load static %}
 </head>
 
-<body>
+<body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg bg-white border-bottom" style="height: 60px;">
-        <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm" style="height: 60px;">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
                 <img src="{% static 'images/logo3.png' %}" alt="Looping"
-                    style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
-            <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
-                    class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
-                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
-                    </svg> </a> <a href="{% url 'shopping_cart' %}" class="btn btn-outline-info p-2" aria-label="Cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
-                        stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M6 6h15l-2 9H7L6 6z" />
-                        <circle cx="9" cy="20" r="1.5" />
-                        <circle cx="18" cy="20" r="1.5" />
-                    </svg> </a> <a href="{% url 'user_profile' %}" class="btn btn-info">My Profile</a>
-                <form action="{% url 'logout' %}" method="post" class="d-inline"> {% csrf_token %} <button type="submit"
-                        class="btn btn-info">Log Out</button> </form> {% else %} <a
-                    href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-info p-2"
-                    aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                        stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
-                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
-                    class="btn btn-outline-info p-2" aria-label="Cart"> <svg xmlns="http://www.w3.org/2000/svg"
-                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M6 6h15l-2 9H7L6 6z" />
-                        <circle cx="9" cy="20" r="1.5" />
-                        <circle cx="18" cy="20" r="1.5" />
-                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
-                    class="btn btn-info">Log In</a> {% endif %}
+                    style="height: 80px; object-fit: contain; margin-left: -20px;">
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                {% if user.is_authenticated %}
+                <a href="{% url 'user_profile' %}"
+                    class="btn btn-info rounded-pill px-3 fw-bold text-white shadow-sm">My Profile</a>
+                <form action="{% url 'logout' %}" method="post" class="d-inline m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary rounded-pill px-3 fw-bold shadow-sm">Log
+                        Out</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-info rounded-pill px-3 fw-bold text-white shadow-sm">Log
+                    In</a>
+                {% endif %}
             </div>
         </div>
     </nav>
 
+    <div class="container mt-5 mb-5">
+        <div class="mb-4 text-start">
+            <a href="{% url 'main_page' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                    class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                </svg>
+                Back to Main Page
+            </a>
+        </div>
 
-    <div class="container mt-3"> <a href="javascript:history.back()" class="btn btn-outline-secondary mb-3"> ← Back </a>
-    </div>
-    <div class="container mt-4 mb-5 pb-5">
         <div class="row justify-content-center">
-            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 25px;">
+                    <div class="row g-0">
+                        <div class="col-md-6 bg-white d-flex align-items-center justify-content-center p-4">
+                            <img src="{{ product.image }}" alt="{{ product.name }}" class="img-fluid"
+                                style="max-height: 400px; object-fit: contain; border-radius: 15px;">
+                        </div>
 
-                <div class="card text-center p-3" style="width: 100%; min-height: 480px;">
+                        <div class="col-md-6 bg-white p-5 d-flex flex-column">
+                            <h2 class="fw-bold text-primary mb-3">{{ product.name }}</h2>
+                            <h3 class="text-dark fw-bold mb-4">{{ product.price }}€</h3>
 
-                    <p class="fw-bold mb-2" style="min-height: 40px; font-size: 1.2rem;">
-                        {{ product.name }}
-                    </p>
+                            <div class="mb-4 text-start">
+                                <p class="text-muted mb-1 small text-uppercase fw-bold">Description</p>
+                                <p class="text-secondary">{{ product.description }}</p>
 
-                    <div class="flex-grow-1 d-flex align-items-center justify-content-center mb-3">
-                        <img src="{{ product.image }}" alt="{{ product.name }}"
-                            style="max-width: 100%; max-height: 240px; object-fit: contain; border-radius: 8px;">
+                                <div class="mt-3">
+                                    <p class="mb-1"><strong>Location:</strong> {{ product.location.city_name }},
+                                        {{ product.location.country_name }}</p>
+                                    <p class="mb-1"><strong>Quantity:</strong> {{ product.quantity }}</p>
+                                    <p class="mb-1"><strong>Seller:</strong> @{{ product.seller.user.username }}</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto d-grid gap-3">
+                                {% if user.is_authenticated %}
+                                {% if product.seller.user != user %}
+                                {% if product.is_available and not product.is_sold %}
+                                <button onclick="confirmPurchase('{{ product.id }}')"
+                                    class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm py-3">
+                                    Buy Now 🛒
+                                </button>
+
+                                <button id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
+                                    class="btn btn-outline-info btn-lg rounded-pill fw-bold shadow-sm py-2">
+                                    {% if product.id in cart_products %}
+                                    Remove from Cart ❌
+                                    {% else %}
+                                    Add to Cart 🛒
+                                    {% endif %}
+                                </button>
+                                {% else %}
+                                <div class="alert alert-secondary text-center rounded-pill fw-bold">This product is no
+                                    longer available.</div>
+                                {% endif %}
+                                {% else %}
+                                <button onclick="confirmDelete('{{ product.id }}')"
+                                    class="btn btn-outline-secondary rounded-pill fw-bold py-2 shadow-sm">
+                                    Delete My Listing
+                                </button>
+                                {% endif %}
+                                {% else %}
+                                <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+                                    class="btn btn-info text-white btn-lg rounded-pill fw-bold shadow-sm py-3">
+                                    Login to Buy
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="text-start px-2">
-                        <p><strong>Description:</strong> {{ product.description }}</p>
-                        <p><strong>Location:</strong> {{ product.location.city_name }},
-                            {{ product.location.country_name }}</p>
-                        <p><strong>Price:</strong> {{ product.price }}€</p>
-                        <p><strong>Quantity:</strong> {{ product.quantity }}</p>
-                        <p><strong>Seller:</strong> {{ product.seller.user.username }}</p>
-                    </div>
-
-                    <div class="mt-3 d-flex flex-column gap-2">
-
-                        {% if user.is_authenticated %}
-                        {% if product.seller.user != user %}
-                        {% if product.is_available and not product.is_sold %}
-                        <button onclick="confirmPurchase('{{ product.id }}')" class="btn btn-success btn-sm">
-                            Buy 🛒
-                        </button>
-
-                        <button id="cart-btn-{{ product.id }}" onclick="handleCart('{{ product.id }}')"
-                            class="btn btn-primary btn-sm">
-                            {% if product.id in cart_products %}
-                            Remove from Cart ❌
-                            {% else %}
-                            Add to Cart 🛒
-                            {% endif %}
-                        </button>
-                        {% else %}
-                        <p class="text-danger fw-bold mt-2">This product is no longer available.</p>
-                        {% endif %}
-                        {% else %}
-                        <button onclick="confirmDelete('{{ product.id }}')" class="btn btn-danger btn-sm">
-                            Delete product
-                        </button>
-                        {% endif %}
-                        {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-info btn-sm">Login to buy</a>
-                        {% endif %}
-
-                    </div>
-
                 </div>
-
             </div>
         </div>
     </div>
@@ -113,128 +118,74 @@
         const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
         const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
+        const loopingSwalStyle = {
+            confirmButton: 'rounded-pill fw-bold px-4 btn btn-info text-white mx-2',
+            cancelButton: 'rounded-pill fw-bold px-4 btn btn-outline-secondary mx-2'
+        };
+
         function confirmPurchase(productId) {
             Swal.fire({
                 title: 'Looping',
                 text: 'Are you sure you want to buy this product?',
-                iconHtml: '🛒',
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, buy',
-                cancelButtonText: 'Cancel'
-            })
-                .then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: 'Looping to checkout...',
-                            text: 'Redirecting to checkout...',
-                            icon: 'success',
-                            timer: 1000,
-                            showConfirmButton: true
-                        });
-                        fetch(`/create-checkout-session/${productId}/`)
-                            .then(res => res.json())
-                            .then(data => {
-                                stripe.redirectToCheckout({ sessionId: data.id });
-                            });
-                    }
-                });
-        }
-
-        function confirmDelete(productId) {
-            Swal.fire({
-                title: 'Looping',
-                text: 'Are you sure you want to delete this product?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete',
-                cancelButtonText: 'Cancel'
+                buttonsStyling: false,
+                customClass: loopingSwalStyle
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `/product/delete/${productId}/`;
+                    fetch(`/create-checkout-session/${productId}/`)
+                        .then(res => res.json())
+                        .then(data => {
+                            stripe.redirectToCheckout({ sessionId: data.id });
+                        });
                 }
             });
         }
 
         function handleCart(productId) {
             if (!isAuthenticated) {
-                Swal.fire({
-                    title: 'Login Required',
-                    text: 'You must be logged in to manage your cart.',
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#aaa',
-                    confirmButtonText: 'Login',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "{% url 'login' %}";
-                    }
-                });
+                window.location.href = "{% url 'login' %}";
                 return;
             }
-
-            const btn = document.getElementById(`cart-btn-${productId}`);
-            const isInCart = btn.innerHTML.includes("Remove");
-
-            if (isInCart) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'Remove this product from your cart?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        executeCartToggle(productId);
-                        Swal.fire({
-                            title: 'Removed',
-                            text: 'Product removed from cart.',
-                            icon: 'success',
-                            timer: 1000,
-                            showConfirmButton: false
-                        });
-                    }
-                });
-            } else {
-                executeCartToggle(productId);
-                Swal.fire({
-                    title: 'Added',
-                    text: 'Product added to cart.',
-                    icon: 'success',
-                    timer: 1000,
-                    showConfirmButton: false
-                });
-            }
+            executeCartToggle(productId);
         }
 
         function executeCartToggle(productId) {
-            fetch(`/toggle-shopping-cart/${productId}/`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
+            fetch(`/toggle-shopping-cart/${productId}/`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(response => response.json())
                 .then(data => {
                     const btn = document.getElementById(`cart-btn-${productId}`);
-                    if (data.action === "added") {
-                        btn.innerHTML = "Remove from Cart 🛒❌";
-                    } else {
-                        btn.innerHTML = "Add to Cart 🛒";
-                    }
+                    btn.innerHTML = data.action === "added" ? "Remove from Cart ❌" : "Add to Cart 🛒";
+
+                    Swal.fire({
+                        title: data.action === "added" ? 'Added to Cart' : 'Removed from Cart',
+                        icon: 'success',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
                 });
         }
+
+        function confirmDelete(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to delete this product? This action is permanent.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete',
+                buttonsStyling: false,
+                customClass: loopingSwalStyle
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/product/delete/${productId}/`;
+                }
+            });
+        }
     </script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'footer.html' %}
 </body>
-{% include 'footer.html' %}
 
 </html>

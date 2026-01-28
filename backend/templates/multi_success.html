@@ -1,75 +1,77 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Multi Success</title>
-    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Completed | Looping</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
-    <div class="container text-center mt-5">
+    <div class="container text-center mt-5 mb-5">
 
         <img src="{% static 'images/Loop2.png' %}" alt="Success"
-            style="width: 260px; height: auto; margin-bottom: 30px;">
+            style="width: 260px; height: auto; margin-bottom: 20px;">
 
-        <h1 class="fw-bold mb-3">Purchase Completed!</h1>
+        <h1 class="fw-bold mb-2 text-dark">Purchase Completed!</h1>
+        <p class="text-secondary fs-5 mb-5">You have successfully purchased multiple products.</p>
 
-        <p class="fs-5 mb-4">You have successfully purchased multiple products.</p>
-
-        <div class="row justify-content-center mb-5">
-
+        <div class="row justify-content-center g-4 mb-5">
             {% for item in purchased_items %}
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" style="max-height: 420px;">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
+                <div class="card border-0 shadow-sm p-3 text-center"
+                    style="width: 260px; border-radius: 20px; min-height: 400px;">
 
-                <div class="card text-center p-3 shadow-sm" style="width: 260px; height: 420px; margin: auto;">
-                    <p class="fw-bold mb-2" style="min-height: 40px;">{{ item.product.name }}</p>
+                    <p class="fw-bold mb-3 text-truncate px-2" style="min-height: 25px;">{{ item.product.name }}</p>
 
-                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                    <div class="bg-white rounded-3 d-flex align-items-center justify-content-center mb-3"
+                        style="height: 180px;">
                         <img src="{{ item.product.image }}" alt="{{ item.product.name }}"
-                            style="max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px;">
+                            style="max-width: 100%; max-height: 160px; object-fit: contain;">
                     </div>
 
-
-                    <p class="fw-bold mt-3">{{ item.product.price }} €</p>
-
-                    <a href="{% url 'product_detail' item.product.id %}" class="btn btn-info btn-sm mt-auto">
-                        View Product
-                    </a>
+                    <div class="mt-auto">
+                        <p class="fw-bold text-primary fs-5 mb-3">{{ item.product.price }} €</p>
+                        <a href="{% url 'product_detail' item.product.id %}"
+                            class="btn btn-outline-info btn-sm rounded-pill px-4 fw-bold">
+                            View Product
+                        </a>
+                    </div>
                 </div>
-
             </div>
             {% endfor %}
-
         </div>
 
-        <div class="card shadow-sm p-4 mx-auto" style="max-width: 350px; border-radius: 12px;">
+        <div class="card border-0 shadow-sm p-4 mx-auto" style="max-width: 400px; border-radius: 25px;">
+            <div class="d-grid gap-3">
+                <a href="{% url 'main_page' %}" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">
+                    Back to Shop
+                </a>
 
-            <a href="{% url 'main_page' %}" class="btn btn-info btn-lg w-100 mb-3">
-                Back to Shop
-            </a>
+                <a href="{% url 'user_profile' %}"
+                    class="btn btn-info btn-lg rounded-pill text-white fw-bold shadow-sm">
+                    My Profile
+                </a>
 
-            <a href="{% url 'user_profile' %}" class="btn btn-success btn-lg w-100 mb-3">
-                My Profile
-            </a>
+                <a href="{% url 'shopping_cart' %}" class="btn btn-outline-secondary btn-lg rounded-pill fw-bold">
+                    Go to Shopping Cart
+                </a>
 
-            <a href="{% url 'shopping_cart' %}" class="btn btn-secondary btn-lg w-100 mb-3">
-                My Shopping Cart
-            </a>
-
-            <form action="{% url 'logout' %}" method="post" class="w-100">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger btn-lg w-100">
-                    Logout
-                </button>
-            </form>
-
+                <form action="{% url 'logout' %}" method="post" class="w-100 m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link text-danger text-decoration-none fw-bold w-100">
+                        Logout
+                    </button>
+                </form>
+            </div>
         </div>
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

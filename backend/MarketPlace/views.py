@@ -246,7 +246,7 @@ def create_upgrade_session(request):
             {
                 "price_data": {
                     "currency": "eur",
-                    "unit_amount": 3000,
+                    "unit_amount": 1999,
                     "product_data": {
                         "name": "Premium Seller Upgrade",
                     },
@@ -438,6 +438,36 @@ def multi_success(request):
     profile.shopping_cart.filter(product_id__in=product_ids).delete()
 
     return render(request, "multi_success.html", {"products": products})
+
+
+@login_required
+def successful(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    profile = request.user.profile
+
+    if product.seller == profile:
+        return render(request, "error.html", {"message": "No puedes comprar tu propio producto."})
+
+    if product.is_sold or not product.is_available:
+        return render(request, "error.html", {"message": "Este producto ya no está disponible."})
+
+    Order.objects.create(
+        buyer=profile,
+        seller=product.seller,
+        product=product,
+        quantity=1,
+        total_price=product.price,
+    )
+
+    product.is_sold = True
+    product.is_available = False
+    product.save()
+
+
+    profile.shopping_cart.filter(product=product).delete()
+
+    return render(request, "successful.html", {"product": product})
+
 
 
 def preview_404(request):

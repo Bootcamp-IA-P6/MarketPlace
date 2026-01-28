@@ -1,67 +1,71 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>My Favorites</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites | Looping</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg bg-white border-bottom" style="height: 60px;">
-        <div class="container-fluid"> <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm" style="height: 60px;">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'main_page' %}">
                 <img src="{% static 'images/logo3.png' %}" alt="Looping"
-                    style="height: 80px; object-fit: contain; margin-top: 0px; margin-left: -20px;"> </a>
-            <div class="d-flex align-items-center gap-3"> {% if user.is_authenticated %} <a href="{% url 'favorites' %}"
-                    class="btn btn-outline-info p-2" aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg"
-                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
-                    </svg> </a> <a href="{% url 'shopping_cart' %}" class="btn btn-outline-info p-2" aria-label="Cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
-                        stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M6 6h15l-2 9H7L6 6z" />
-                        <circle cx="9" cy="20" r="1.5" />
-                        <circle cx="18" cy="20" r="1.5" />
-                    </svg> </a> <a href="{% url 'user_profile' %}" class="btn btn-info">My Profile</a>
-                <form action="{% url 'logout' %}" method="post" class="d-inline"> {% csrf_token %} <button type="submit"
-                        class="btn btn-info">Log Out</button> </form> {% else %} <a
-                    href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-info p-2"
-                    aria-label="Favorites"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                        stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M12 21s-7-4.35-7-10a4 4 0 018-1 4 4 0 018 1c0 5.65-7 10-7 10z" />
-                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
-                    class="btn btn-outline-info p-2" aria-label="Cart"> <svg xmlns="http://www.w3.org/2000/svg"
-                        width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path d="M6 6h15l-2 9H7L6 6z" />
-                        <circle cx="9" cy="20" r="1.5" />
-                        <circle cx="18" cy="20" r="1.5" />
-                    </svg> </a> <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
-                    class="btn btn-info">Log In</a> {% endif %}
+                    style="height: 80px; object-fit: contain; margin-left: -20px;">
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                {% if user.is_authenticated %}
+                <a href="{% url 'user_profile' %}"
+                    class="btn btn-info rounded-pill px-3 fw-bold text-white shadow-sm">My Profile</a>
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary rounded-pill px-3 fw-bold shadow-sm">Log
+                        Out</button>
+                </form>
+                {% endif %}
             </div>
         </div>
     </nav>
 
+    <div id="favorites-container" class="container mt-5">
+        <div class="mb-4">
+            <a href="{% url 'main_page' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                    class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                </svg>
+                Back to Shop
+            </a>
+        </div>
 
-    <div id="favorites-container" class="container">
-        <h1 class="text-center mb-4">Favorites</h1>
+        <h1 class="fw-bold text-primary mb-5">Your Favorites</h1>
 
         {% if favorite_products %}
-        <div class="row justify-content-center" id="favorites-row">
+        <div class="row" id="favorites-row">
             {% for product in favorite_products %}
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 favorite-card" style="display: none;">
-                <div class="card d-flex flex-column text-center" style="width: 260px; height: 420px; padding: 15px;">
-                    <p class="fw-bold mb-2" style="min-height: 40px;">{{ product.name }}</p>
-                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 20px;">
+                    <h5 class="fw-bold text-dark mb-3 text-truncate">{{ product.name }}</h5>
+
+                    <div class="d-flex align-items-center justify-content-center bg-light rounded-3 mb-3"
+                        style="height: 200px;">
                         <img src="{{ product.image }}" alt="{{ product.name }}"
-                            style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px;">
+                            style="max-width: 100%; max-height: 180px; object-fit: contain;">
                     </div>
-                    <div class="mt-3 d-flex flex-column gap-2 mt-auto">
-                        <a href="{% url 'product_detail' product.id %}" class="btn btn-info btn-sm">View Product</a>
-                        <button type="button" onclick="confirmRemove('{{ product.id }}')" class="btn btn-danger btn-sm">
-                            Remove from Favorites ❤️
+
+                    <div class="mt-auto d-grid gap-2">
+                        <a href="{% url 'product_detail' product.id %}"
+                            class="btn btn-info text-white rounded-pill fw-bold shadow-sm">
+                            View Product
+                        </a>
+                        <button type="button" onclick="confirmRemove('{{ product.id }}')"
+                            class="btn btn-outline-info rounded-pill fw-bold shadow-sm">
+                            Remove ❤️
                         </button>
                     </div>
                 </div>
@@ -69,13 +73,16 @@
             {% endfor %}
         </div>
 
-        <div class="text-center mb-4">
-            <button id="load-more-btn" class="btn btn-primary">Ver más</button>
+        <div class="text-center my-5">
+            <button id="load-more-btn" class="btn btn-primary rounded-pill px-5 fw-bold shadow">See More</button>
         </div>
 
         {% else %}
-        <p class="text-center">You have no favorites yet.</p>
-        <a href="{% url 'main_page' %}" class="btn btn-light d-block mx-auto">Go back to shop</a>
+        <div class="text-center py-5">
+            <p class="text-muted fs-5">You have no favorites yet.</p>
+            <a href="{% url 'main_page' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow">Discover
+                Products</a>
+        </div>
         {% endif %}
     </div>
 
@@ -84,76 +91,59 @@
             const cards = document.querySelectorAll(".favorite-card");
             const loadMoreBtn = document.getElementById("load-more-btn");
             let visibleCount = 8;
-
             function showCards(count) {
                 for (let i = 0; i < count && i < cards.length; i++) {
-                    cards[i].style.display = "flex";
+                    cards[i].style.display = "block";
                 }
             }
-
             showCards(visibleCount);
-
-            loadMoreBtn.addEventListener("click", () => {
-                let newVisibleCount = visibleCount + 4;
-                for (let i = visibleCount; i < newVisibleCount && i < cards.length; i++) {
-                    cards[i].style.display = "flex";
-                }
-                visibleCount = newVisibleCount;
-
-                if (visibleCount >= cards.length) {
-                    loadMoreBtn.disabled = true;
-                    loadMoreBtn.innerText = "No tienes más productos en favoritos";
-                }
-            });
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener("click", () => {
+                    let newVisibleCount = visibleCount + 4;
+                    for (let i = visibleCount; i < newVisibleCount && i < cards.length; i++) {
+                        cards[i].style.display = "block";
+                    }
+                    visibleCount = newVisibleCount;
+                    if (visibleCount >= cards.length) {
+                        loadMoreBtn.style.display = "none";
+                    }
+                });
+                if (cards.length <= visibleCount) loadMoreBtn.style.display = "none";
+            }
         });
-    </script>
 
-
-
-
-
-
-    <script>
         function confirmRemove(productId) {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to remove this product from your favorites?",
-                icon: 'warning',
+                title: 'Remove from favorites?',
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#ff4d4d',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'Cancel'
+                confirmButtonColor: '#0dcaf0',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, remove',
+                customClass: {
+                    confirmButton: 'rounded-pill fw-bold px-4',
+                    cancelButton: 'rounded-pill fw-bold px-4'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch(`/toggle-favorites/${productId}/`)
-                        .then(response => {
-                            if (!response.ok) throw new Error('Network response was not ok');
-                            return response.json();
-                        })
+                        .then(res => res.json())
                         .then(data => {
                             if (data.success) {
                                 Swal.fire({
-                                    title: 'Removed!',
-                                    text: 'The product has been removed.',
+                                    title: 'Updated!',
                                     icon: 'success',
-                                    timer: 1000,
-                                    showConfirmButton: true
-                                }).then(() => {
-                                    window.location.reload();
-                                });
+                                    timer: 800,
+                                    showConfirmButton: false
+                                }).then(() => window.location.reload());
                             }
-                        })
-                        .catch(err => {
-                            console.error("Detailed Error:", err);
-                            window.location.reload();
                         });
                 }
             });
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'footer.html' %}
 </body>
-{% include 'footer.html' %}
 
 </html>
